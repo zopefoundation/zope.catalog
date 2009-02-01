@@ -60,9 +60,10 @@ class ICatalogIndex(zope.index.interfaces.IInjection,
                     ):
     """An index to be used in a catalog
     """
-    zope.container.constraints.containers('.ICatalog')
 
     __parent__ = zope.schema.Field()
+
+    zope.container.constraints.containers('.ICatalog')
     
 
 class ICatalog(ICatalogQuery, ICatalogEdit,
