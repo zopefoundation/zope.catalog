@@ -1,0 +1,10 @@
+=======
+CHANGES
+=======
+
+3.8.0 (unreleased)
+------------------
+
+- Move core functionality from ``zope.app.catalog`` to this package.
+  The ``zope.app.catalog`` package now only contains ZMI-related browser
+  views and backward-compatibility imports.

@@ -1,0 +1,8 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+	<subscriber handler=".catalog.indexAdded" />
+	<subscriber handler=".catalog.indexDocSubscriber" />
+	<subscriber handler=".catalog.reindexDocSubscriber" />
+	<subscriber handler=".catalog.unindexDocSubscriber" />
+
+</configure>

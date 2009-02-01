@@ -1,0 +1,54 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+	<class class=".catalog.Catalog">
+		<factory id="zope.app.catalog" />
+		<allow interface=".interfaces.ICatalogQuery" />
+		<require
+		  interface=".interfaces.ICatalogEdit"
+		  permission="zope.ManageServices"
+		  />
+		<require
+		  interface="zope.container.interfaces.IContainer"
+		  permission="zope.ManageServices"
+		  />
+	</class>
+
+	<class class=".catalog.ResultSet">
+		<allow attributes="__iter__ __len__" />
+	</class>
+
+	<class class=".field.FieldIndex">
+		<require
+		  permission="zope.ManageServices"
+		  interface=".interfaces.IAttributeIndex
+		             zope.index.interfaces.IStatistics"
+		  set_schema=".interfaces.IAttributeIndex"
+		  />
+	</class>
+
+	<class class=".keyword.KeywordIndex">
+		<require
+		  permission="zope.ManageServices"
+		  interface=".interfaces.IAttributeIndex
+		             zope.index.interfaces.IStatistics"
+		  set_schema=".interfaces.IAttributeIndex"
+		  />
+	</class>
+
+	<class class=".keyword.CaseInsensitiveKeywordIndex">
+		<require like_class=".keyword.KeywordIndex" /> 
+	</class>
+
+	<class class=".text.TextIndex">
+		<require
+		  permission="zope.ManageServices"
+		  interface=".interfaces.IAttributeIndex
+		             zope.index.interfaces.IStatistics
+		            "
+		  set_schema=".interfaces.IAttributeIndex"
+		  />
+	</class>
+
+	<interface interface="zope.index.text.interfaces.ISearchableText" />
+
+</configure>
