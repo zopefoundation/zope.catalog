@@ -2,7 +2,12 @@
 CHANGES
 =======
 
-3.8.0 (unreleased)
+3.8.1 (unreleased)
+------------------
+
+- ...
+
+3.8.0 (2009-02-01)
 ------------------
 
 - Move core functionality from ``zope.app.catalog`` to this package.
