@@ -67,7 +67,7 @@ class IntIdsStub:
     def unregister(self, ob):
         uid = self.ids[ob]
         del self.ids[ob]
-        del self.objs[id]
+        del self.objs[uid]
 
     def getObject(self, uid):
         return self.objs[uid]
