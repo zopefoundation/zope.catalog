@@ -27,10 +27,10 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(name = 'zope.catalog',
-      version = '3.8.1dev',
+      version = '3.8.1',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
-      description='Cataloging and Indexing Framework for Zope 3',
+      description='Cataloging and Indexing Framework for the Zope Toolkit',
       long_description=(
           read('README.txt')
           + '\n\n' +
