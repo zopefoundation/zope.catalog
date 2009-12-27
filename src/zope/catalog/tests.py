@@ -20,19 +20,30 @@ $Id$
 """
 import unittest
 from zope.testing import doctest
-from zope.interface import implements
+from zope.interface import implements, Interface
 from zope.interface.verify import verifyObject
-from zope.app.testing import setup, placelesssetup
 from BTrees.IFBTree import IFSet
 from zope.intid.interfaces import IIntIds
-from zope.site.hooks import setSite
 from zope.location.location import Location
 from zope.component import provideUtility
+from zope.component import provideAdapter
+from zope.component import provideHandler
+from zope.component import testing, eventtesting
+from zope.component.interfaces import ISite, IComponentLookup
+from zope.site.hooks import setSite, setHooks, resetHooks
+from zope.site.folder import Folder, rootFolder
+from zope.site.site import SiteManagerAdapter, LocalSiteManager
+from zope.traversing import api
+from zope.traversing.testing import setUp as traversingSetUp
+from zope.traversing.interfaces import ITraversable
+from zope.container.traversal import ContainerTraversable
+from zope.container.interfaces import ISimpleReadContainer
 
 from zope.index.interfaces import IInjection, IIndexSearch
 from zope.catalog.interfaces import ICatalog
 from zope.catalog.catalog import Catalog
 from zope.catalog.field import FieldIndex
+
 
 class ReferenceStub:
     def __init__(self, obj):
@@ -113,7 +124,15 @@ class stoopid:
         self.__dict__ = kw
 
 
-class Test(placelesssetup.PlacelessSetup, unittest.TestCase):
+class PlacelessSetup(testing.PlacelessSetup,
+                     eventtesting.PlacelessSetup):
+
+    def setUp(self, doctesttest=None):
+        testing.PlacelessSetup.setUp(self)
+        eventtesting.PlacelessSetup.setUp(self)
+
+
+class Test(PlacelessSetup, unittest.TestCase):
 
     def test_catalog_add_del_indexes(self):
         catalog = Catalog()
@@ -222,14 +241,14 @@ class Stub(Location):
 class TestEventSubscribers(unittest.TestCase):
 
     def setUp(self):
-        self.root = setup.placefulSetUp(True)
+        self.root = placefulSetUp(True)
         sm = self.root.getSiteManager()
-        self.utility = setup.addUtility(sm, '', IIntIds, IntIdsStub())
-        self.cat = setup.addUtility(sm, '', ICatalog, CatalogStub())
+        self.utility = addUtility(sm, '', IIntIds, IntIdsStub())
+        self.cat = addUtility(sm, '', ICatalog, CatalogStub())
         setSite(self.root)
 
     def tearDown(self):
-        setup.placefulTearDown()
+        placefulTearDown()
 
     def test_indexDocSubscriber(self):
         from zope.catalog.catalog import indexDocSubscriber
@@ -305,25 +324,24 @@ class TestIndexUpdating(unittest.TestCase) :
     """
 
     def setUp(self):
-
-        setup.placefulSetUp(True)
+        placefulSetUp(True)
 
         from zope.catalog.catalog import Catalog
 
-        self.root = setup.buildSampleFolderTree()
+        self.root = buildSampleFolderTree()
 
         subfolder = self.root[u'folder1'][u'folder1_1']
-        root_sm = self.root_sm = setup.createSiteManager(self.root)
-        local_sm = self.local_sm = setup.createSiteManager(subfolder)
-        self.utility = setup.addUtility(root_sm, '', IIntIds, IntIdsStub())
-        self.cat = setup.addUtility(local_sm, '', ICatalog, Catalog())
+        root_sm = self.root_sm = createSiteManager(self.root)
+        local_sm = self.local_sm = createSiteManager(subfolder)
+        self.utility = addUtility(root_sm, '', IIntIds, IntIdsStub())
+        self.cat = addUtility(local_sm, '', ICatalog, Catalog())
         self.cat['name'] = StubIndex('__name__', None)
 
         for obj in self.iterAll(self.root) :
             self.utility.register(obj)
 
     def tearDown(self):
-        setup.placefulTearDown()
+        placefulTearDown()
 
     def iterAll(self, container) :
         from zope.container.interfaces import IContainer
@@ -357,7 +375,7 @@ class TestIndexUpdating(unittest.TestCase) :
         because the intid utility can not contain objects outside the site
         where it is registered.
         """
-        utility = setup.addUtility(self.local_sm, '', IIntIds, IntIdsStub())
+        utility = addUtility(self.local_sm, '', IIntIds, IntIdsStub())
         subfolder = self.root[u'folder1'][u'folder1_1']
         for obj in self.iterAll(subfolder) :
             utility.register(obj)
@@ -375,18 +393,17 @@ class TestSubSiteCatalog(unittest.TestCase) :
     """
 
     def setUp(self):
-
-        setup.placefulSetUp(True)
+        placefulSetUp(True)
 
         from zope.catalog.catalog import Catalog
 
-        self.root = setup.buildSampleFolderTree()
+        self.root = buildSampleFolderTree()
 
         self.subfolder = self.root[u'folder1'][u'folder1_1']
-        root_sm = self.root_sm = setup.createSiteManager(self.root)
-        local_sm = self.local_sm = setup.createSiteManager(self.subfolder)
-        self.utility = setup.addUtility(root_sm, '', IIntIds, IntIdsStub())
-        self.cat = setup.addUtility(local_sm, '', ICatalog, Catalog())
+        root_sm = self.root_sm = createSiteManager(self.root)
+        local_sm = self.local_sm = createSiteManager(self.subfolder)
+        self.utility = addUtility(root_sm, '', IIntIds, IntIdsStub())
+        self.cat = addUtility(local_sm, '', ICatalog, Catalog())
         self.cat['name'] = StubIndex('__name__', None)
 
         for obj in self.iterAll(self.root) :
@@ -394,7 +411,7 @@ class TestSubSiteCatalog(unittest.TestCase) :
 
 
     def tearDown(self):
-        setup.placefulTearDown()
+        placefulTearDown()
 
     def iterAll(self, container) :
         from zope.container.interfaces import IContainer
@@ -489,7 +506,7 @@ class TestSubSiteCatalog(unittest.TestCase) :
         self.assertEqual(len(res), 0)
 
 
-class TestCatalogBugs(placelesssetup.PlacelessSetup, unittest.TestCase):
+class TestCatalogBugs(PlacelessSetup, unittest.TestCase):
     """I found that z.a.catalog, AttributeIndex failed to remove the previous
     value/object from the index IF the NEW value is None.
     """
@@ -553,7 +570,7 @@ class stoopidCallable(object):
     def getAuthor(self):
         return self.author
 
-class TestIndexRaisingValueGetter(placelesssetup.PlacelessSetup, unittest.TestCase):
+class TestIndexRaisingValueGetter(PlacelessSetup, unittest.TestCase):
     """ """
     def test_IndexRaisingValueGetter(self):
         """We can have indexes whose values are determined by callable
@@ -587,9 +604,114 @@ class TestIndexRaisingValueGetter(placelesssetup.PlacelessSetup, unittest.TestCa
             pass
 
 
+#------------------------------------------------------------------------
+# placeful setUp/tearDown
+def placefulSetUp(site=False):
+    testing.setUp()
+    eventtesting.setUp()
+    traversingSetUp()
+    setHooks()
+    provideAdapter(ContainerTraversable,
+                   (ISimpleReadContainer,), ITraversable)
+    provideAdapter(SiteManagerAdapter, (Interface,), IComponentLookup)
+
+    if site:
+        root = rootFolder()
+        createSiteManager(root, setsite=True)
+        return root
+
+def placefulTearDown():
+    resetHooks()
+    setSite()
+    testing.tearDown()
+
+
+#------------------------------------------------------------------------
+# placeless setUp/tearDown
+ps = PlacelessSetup()
+placelessSetUp = ps.setUp
+
+def placelessTearDown():
+    tearDown_ = ps.tearDown
+    def tearDown(doctesttest=None):
+        tearDown_()
+    return tearDown
+
+placelessTearDown = placelessTearDown()
+del ps
+
+
+#------------------------------------------------------------------------
+# setup site manager
+def createSiteManager(folder, setsite=False):
+    if not ISite.providedBy(folder):
+        folder.setSiteManager(LocalSiteManager(folder))
+    if setsite:
+        setSite(folder)
+    return api.traverse(folder, "++etc++site")
+
+
+#------------------------------------------------------------------------
+# Local Utility Addition
+def addUtility(sitemanager, name, iface, utility, suffix=''):
+    """Add a utility to a site manager
+
+    This helper function is useful for tests that need to set up utilities.
+    """
+    folder_name = (name or (iface.__name__ + 'Utility')) + suffix
+    default = sitemanager['default']
+    default[folder_name] = utility
+    utility = default[folder_name]
+    sitemanager.registerUtility(utility, iface, name)
+    return utility
+
+
+#------------------------------------------------------------------------
+# Sample Folder Creation
+def buildSampleFolderTree():
+    # set up a reasonably complex folder structure
+    #
+    #     ____________ rootFolder ______________________________
+    #    /                                    \                 \
+    # folder1 __________________            folder2           folder3
+    #   |                       \             |                 |
+    # folder1_1 ____           folder1_2    folder2_1         folder3_1
+    #   |           \            |            |
+    # folder1_1_1 folder1_1_2  folder1_2_1  folder2_1_1
+
+    root = rootFolder()
+    root[u'folder1'] = Folder()
+    root[u'folder1'][u'folder1_1'] = Folder()
+    root[u'folder1'][u'folder1_1'][u'folder1_1_1'] = Folder()
+    root[u'folder1'][u'folder1_1'][u'folder1_1_2'] = Folder()
+    root[u'folder1'][u'folder1_2'] = Folder()
+    root[u'folder1'][u'folder1_2'][u'folder1_2_1'] = Folder()
+    root[u'folder2'] = Folder()
+    root[u'folder2'][u'folder2_1'] = Folder()
+    root[u'folder2'][u'folder2_1'][u'folder2_1_1'] = Folder()
+    root[u"\N{CYRILLIC SMALL LETTER PE}"
+         u"\N{CYRILLIC SMALL LETTER A}"
+         u"\N{CYRILLIC SMALL LETTER PE}"
+         u"\N{CYRILLIC SMALL LETTER KA}"
+         u"\N{CYRILLIC SMALL LETTER A}3"] = Folder()
+    root[u"\N{CYRILLIC SMALL LETTER PE}"
+         u"\N{CYRILLIC SMALL LETTER A}"
+         u"\N{CYRILLIC SMALL LETTER PE}"
+         u"\N{CYRILLIC SMALL LETTER KA}"
+         u"\N{CYRILLIC SMALL LETTER A}3"][
+         u"\N{CYRILLIC SMALL LETTER PE}"
+         u"\N{CYRILLIC SMALL LETTER A}"
+         u"\N{CYRILLIC SMALL LETTER PE}"
+         u"\N{CYRILLIC SMALL LETTER KA}"
+         u"\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
+
+    return root
+
+
 def setUp(test):
-    root = setup.placefulSetUp(True)
+    root = placefulSetUp(True)
     test.globs['root'] = root
+
 
 def test_suite():
     suite = unittest.TestSuite()
@@ -602,13 +724,13 @@ def test_suite():
     suite.addTest(doctest.DocTestSuite('zope.catalog.attribute'))
     suite.addTest(doctest.DocFileSuite(
         'README.txt',
-        setUp=placelesssetup.setUp,
-        tearDown=placelesssetup.tearDown,
+        setUp=placelessSetUp,
+        tearDown=placelessTearDown,
         ))
     suite.addTest(doctest.DocFileSuite(
         'event.txt',
         setUp=setUp,
-        tearDown=lambda x: setup.placefulTearDown(),
+        tearDown=lambda x: placefulTearDown(),
         optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
         ))
 

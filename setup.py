@@ -61,7 +61,7 @@ setup(name = 'zope.catalog',
       namespace_packages=['zope'],
       extras_require = dict(
           test=['zope.testing',
-                'zope.app.testing',
+                'zope.site',
                 ]),
       install_requires = [
           'setuptools',
