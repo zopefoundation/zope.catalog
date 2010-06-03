@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Keyword catalog index
-
-$Id:$
 """
 import zope.index.keyword
 import zope.interface

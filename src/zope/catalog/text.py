@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Text catalog indexes
-
-$Id$
 """
 import zope.index.text
 import zope.index.text.interfaces

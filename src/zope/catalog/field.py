@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Field catalog indexes
-
-$Id$
 """
 import zope.index.field
 import zope.interface

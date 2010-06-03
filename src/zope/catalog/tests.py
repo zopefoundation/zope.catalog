@@ -15,8 +15,6 @@
 
 Note that indexes &c already have test suites, we only have to check that
 a catalog passes on events that it receives.
-
-$Id$
 """
 import unittest
 from zope.testing import doctest

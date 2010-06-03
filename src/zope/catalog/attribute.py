@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Index interface-defined attributes
-
-$Id$
 """
 __docformat__ = 'restructuredtext'
 
