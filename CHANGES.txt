@@ -5,6 +5,7 @@ CHANGES
 3.8.2 (unreleased)
 ------------------
 
+- Conform to repository policy.
 
 3.8.1 (2009-12-27)
 ------------------

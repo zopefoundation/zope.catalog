@@ -26,7 +26,7 @@ def read(*rnames):
 
 setup(name = 'zope.catalog',
       version = '3.8.2dev',
-      author='Zope Foundation and Contributors',
+      author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
       long_description=(
