@@ -25,7 +25,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(name = 'zope.catalog',
-      version='3.8.2',
+      version='3.8.3dev',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
