@@ -48,8 +48,8 @@ class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
         default=True,
         )
 
+@zope.interface.implementer(ITextIndex)
 class TextIndex(zope.catalog.attribute.AttributeIndex,
                 zope.index.text.TextIndex,
                 zope.container.contained.Contained):
-
-    zope.interface.implements(ITextIndex)
+    pass

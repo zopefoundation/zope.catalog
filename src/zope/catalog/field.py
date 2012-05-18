@@ -25,8 +25,8 @@ class IFieldIndex(zope.catalog.interfaces.IAttributeIndex,
     """Interface-based catalog field index
     """
 
+@zope.interface.implementer(IFieldIndex)
 class FieldIndex(zope.catalog.attribute.AttributeIndex,
                  zope.index.field.FieldIndex,
                  zope.container.contained.Contained):
-
-    zope.interface.implements(IFieldIndex)
+    pass

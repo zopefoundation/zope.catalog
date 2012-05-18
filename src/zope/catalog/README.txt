@@ -18,12 +18,12 @@ we'll write the base index class:
     >>> import persistent, BTrees.OOBTree, BTrees.IFBTree, BTrees.IOBTree
     >>> import zope.interface, zope.index.interfaces
 
-    >>> class BaseIndex(persistent.Persistent):
-    ...     zope.interface.implements(
+    >>> @zope.interface.implementer(
     ...         zope.index.interfaces.IInjection,
     ...         zope.index.interfaces.IIndexSearch,
     ...         zope.index.interfaces.IIndexSort,
     ...         )
+    ... class BaseIndex(persistent.Persistent):
     ...
     ...     def clear(self):
     ...         self.forward = BTrees.OOBTree.OOBTree()
@@ -72,11 +72,12 @@ index:
     >>> import zope.catalog.interfaces
     >>> import zope.container.contained
 
-    >>> class Index(zope.catalog.attribute.AttributeIndex, 
+    >>> @zope.interface.implementer(zope.catalog.interfaces.ICatalogIndex)
+    ... class Index(zope.catalog.attribute.AttributeIndex, 
     ...             BaseIndex,
     ...             zope.container.contained.Contained,
     ...             ):
-    ...    zope.interface.implements(zope.catalog.interfaces.ICatalogIndex)
+    ...    pass
 
 Unfortunately, because of the way we currently handle containment
 constraints, we have to provide `ICatalogIndex`, which extends
@@ -115,15 +116,15 @@ present, then we'll ignore the object.
 
 Now, let's create some objects and index them:
 
-    >>> class Person:
-    ...     zope.interface.implements(IPerson)
+    >>> @zope.interface.implementer(IPerson)
+    ... class Person:
     ...     def __init__(self, age):
     ...         self._age = age
     ...     def age(self):
     ...         return self._age
 
-    >>> class Discriminating:
-    ...     zope.interface.implements(IFavoriteColor)
+    >>> @zope.interface.implementer(IFavoriteColor)
+    ... class Discriminating:
     ...     def __init__(self, color):
     ...         self.color = color
 
@@ -192,8 +193,8 @@ maintaining id <-> object mappings.  To see how this works, we'll
 create a utility to work with our catalog:
 
     >>> import zope.intid.interfaces
-    >>> class Ids:
-    ...     zope.interface.implements(zope.intid.interfaces.IIntIds)
+    >>> @zope.interface.implementer(zope.intid.interfaces.IIntIds)
+    ... class Ids:
     ...     def __init__(self, data):
     ...         self.data = data
     ...     def getObject(self, id):
@@ -288,11 +289,11 @@ scores, according to how closely a document matches a query.  Let's
 create a new index, a "keyword index" that indexes sequences of
 values:
 
-    >>> class BaseKeywordIndex(persistent.Persistent):
-    ...     zope.interface.implements(
+    >>> @zope.interface.implementer(
     ...         zope.index.interfaces.IInjection,
     ...         zope.index.interfaces.IIndexSearch,
     ...         )
+    ... class BaseKeywordIndex(persistent.Persistent):
     ...
     ...     def clear(self):
     ...         self.forward = BTrees.OOBTree.OOBTree()
@@ -328,11 +329,12 @@ values:
     ...                 _, result = BTrees.IFBTree.weightedUnion(result, set)
     ...         return result
 
-    >>> class KeywordIndex(zope.catalog.attribute.AttributeIndex, 
+    >>> @zope.interface.implementer(zope.catalog.interfaces.ICatalogIndex)
+    ... class KeywordIndex(zope.catalog.attribute.AttributeIndex, 
     ...                    BaseKeywordIndex,
     ...                    zope.container.contained.Contained,
     ...                    ):
-    ...    zope.interface.implements(zope.catalog.interfaces.ICatalogIndex)
+    ...    pass
 
 Now, we'll add a hobbies index:
 

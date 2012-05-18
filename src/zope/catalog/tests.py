@@ -18,7 +18,7 @@ a catalog passes on events that it receives.
 """
 import unittest
 from zope.testing import doctest
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 from zope.interface.verify import verifyObject
 from BTrees.IFBTree import IFSet
 from zope.intid.interfaces import IIntIds
@@ -51,9 +51,9 @@ class ReferenceStub:
         return self.obj
 
 
+@implementer(IIntIds)
 class IntIdsStub:
     """A stub for IntIds."""
-    implements(IIntIds)
 
     def __init__(self):
         self.ids = {}
@@ -91,10 +91,9 @@ class IntIdsStub:
         return self.objs.iterkeys()
 
 
+@implementer(IIndexSearch, IInjection)
 class StubIndex:
     """A stub for Index."""
-
-    implements(IIndexSearch, IInjection)
 
     def __init__(self, field_name, interface=None):
         self._field_name = field_name
@@ -220,8 +219,9 @@ class Test(PlacelessSetup, unittest.TestCase):
                           simiantype='monkey', hat='beret')
 
 
+@implementer(ICatalog)
 class CatalogStub:
-    implements(ICatalog)
+
     def __init__(self):
         self.regs = []
         self.unregs = []

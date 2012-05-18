@@ -21,7 +21,7 @@ from zope import component
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.btree import BTreeContainer
 from zope.container.interfaces import IObjectAddedEvent
-from zope.interface import implements
+from zope.interface import implementer
 from zope.intid.interfaces import IIntIds, IIntIdAddedEvent, IIntIdRemovedEvent
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.location import location
@@ -45,12 +45,11 @@ class ResultSet:
             yield obj
 
 
+@implementer(ICatalog,
+             IAttributeAnnotatable,
+             zope.index.interfaces.IIndexSearch,
+            )
 class Catalog(BTreeContainer):
-
-    implements(ICatalog,
-               IAttributeAnnotatable,
-               zope.index.interfaces.IIndexSearch,
-               )
 
     family = BTrees.family32
 

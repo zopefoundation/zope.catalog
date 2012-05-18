@@ -24,14 +24,15 @@ class IKeywordIndex(zope.catalog.interfaces.IAttributeIndex,
                     zope.catalog.interfaces.ICatalogIndex):
     """Interface-based catalog keyword index"""
 
+@zope.interface.implementer(IKeywordIndex)
 class KeywordIndex(zope.catalog.attribute.AttributeIndex,
                    zope.index.keyword.KeywordIndex,
                    zope.container.contained.Contained):
+    pass
 
-    zope.interface.implements(IKeywordIndex)
-
-class CaseInsensitiveKeywordIndex(zope.catalog.attribute.AttributeIndex,
-                                  zope.index.keyword.CaseInsensitiveKeywordIndex,
-                                  zope.container.contained.Contained):
-
-    zope.interface.implements(IKeywordIndex)
+@zope.interface.implementer(IKeywordIndex)
+class CaseInsensitiveKeywordIndex(
+            zope.catalog.attribute.AttributeIndex,
+            zope.index.keyword.CaseInsensitiveKeywordIndex,
+            zope.container.contained.Contained):
+    pass

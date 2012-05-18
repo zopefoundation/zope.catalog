@@ -12,9 +12,9 @@ need to implement the index_doc method for this test.
 
     >>> from zope.catalog.interfaces import ICatalog
     >>> from zope import interface, component
-    >>> class FakeCatalog(object):
+    >>> @interface.implementer(ICatalog)
+    ... class FakeCatalog(object):
     ...     indexed = []
-    ...     interface.implements(ICatalog)
     ...     def index_doc(self, docid, obj):
     ...         self.indexed.append((docid, obj))
     >>> cat = FakeCatalog()

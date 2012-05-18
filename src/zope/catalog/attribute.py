@@ -18,6 +18,7 @@ __docformat__ = 'restructuredtext'
 import zope.interface
 from zope.catalog.interfaces import IAttributeIndex
 
+@zope.interface.implementer(IAttributeIndex)
 class AttributeIndex(object):
     """Index interface-defined attributes
 
@@ -101,8 +102,6 @@ class AttributeIndex(object):
          [(11, 9), (22, 4)]
 
        """
-
-    zope.interface.implements(IAttributeIndex)
 
     default_field_name = None
     default_interface = None
