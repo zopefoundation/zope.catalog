@@ -120,7 +120,7 @@ class Catalog(BTreeContainer):
             # no applicable indexes, so catalog was not applicable
             return None
 
-        results.sort() # order from smallest to largest
+        results.sort(key=lambda x: x[0]) # order from smallest to largest
 
         _, result = results.pop(0)
         for _, r in results:

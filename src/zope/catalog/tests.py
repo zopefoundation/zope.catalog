@@ -16,6 +16,7 @@
 Note that indexes &c already have test suites, we only have to check that
 a catalog passes on events that it receives.
 """
+import re
 import unittest
 from zope.testing import doctest
 from zope.interface import implementer, Interface
@@ -41,6 +42,15 @@ from zope.index.interfaces import IInjection, IIndexSearch
 from zope.catalog.interfaces import ICatalog
 from zope.catalog.catalog import Catalog
 from zope.catalog.field import FieldIndex
+from zope.testing import renormalizing
+
+checker = renormalizing.RENormalizing([
+    # Python 3 unicode removed the "u".
+    (re.compile("u('.*?')"),
+     r"\1"),
+    (re.compile('u(".*?")'),
+     r"\1"),
+    ])
 
 
 class ReferenceStub:
@@ -88,7 +98,7 @@ class IntIdsStub:
         return self.ids.get(ob, default)
 
     def __iter__(self):
-        return self.objs.iterkeys()
+        return iter(self.objs.keys())
 
 
 @implementer(IIndexSearch, IInjection)
@@ -207,7 +217,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         res = catalog.searchResults(simiantype='punyhuman', name='anthony')
         self.assertEqual(len(res), 1)
-        ob = iter(res).next()
+        ob = next(iter(res))
         self.assertEqual((ob.name, ob.simiantype), ('anthony', 'punyhuman'))
 
         res = catalog.searchResults(simiantype='ape', name='bobo')
@@ -724,12 +734,14 @@ def test_suite():
         'README.txt',
         setUp=placelessSetUp,
         tearDown=placelessTearDown,
+        checker=checker,
         ))
     suite.addTest(doctest.DocFileSuite(
         'event.txt',
         setUp=setUp,
         tearDown=lambda x: placefulTearDown(),
         optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+        checker=checker,
         ))
 
     return suite

@@ -56,7 +56,9 @@ we'll write the base index class:
     ...         return set
     ...
     ...     def sort(self, docids, limit=None, reverse=False):
-    ...         for i, docid in enumerate(sorted(docids, key=self.backward.get, reverse=reverse)):
+    ...         key_func = lambda x: self.backward.get(x, -1)
+    ...         for i, docid in enumerate(
+    ...                  sorted(docids, key=key_func, reverse=reverse)):
     ...             yield docid
     ...             if limit and i >= (limit - 1):
     ...                 break
@@ -73,7 +75,7 @@ index:
     >>> import zope.container.contained
 
     >>> @zope.interface.implementer(zope.catalog.interfaces.ICatalogIndex)
-    ... class Index(zope.catalog.attribute.AttributeIndex, 
+    ... class Index(zope.catalog.attribute.AttributeIndex,
     ...             BaseIndex,
     ...             zope.container.contained.Contained,
     ...             ):
@@ -82,7 +84,7 @@ index:
 Unfortunately, because of the way we currently handle containment
 constraints, we have to provide `ICatalogIndex`, which extends
 `IContained`. We subclass `Contained` to get an implementation for
-`IContained`. 
+`IContained`.
 
 Now let's add some of these indexes to our catalog.  Let's create some
 indexes.  First we'll define some interfaces providing data to index:
@@ -200,9 +202,9 @@ create a utility to work with our catalog:
     ...     def getObject(self, id):
     ...         return self.data[id]
     ...     def __iter__(self):
-    ...         return self.data.iterkeys()
+    ...         return iter(self.data)
     >>> ids = Ids({1: o1, 2: o2, 3: o3, 4: o4, 5: o5, 6: o6})
-    
+
     >>> from zope.component import provideUtility
     >>> provideUtility(ids, zope.intid.interfaces.IIntIds)
 
@@ -224,7 +226,7 @@ We can update all of the indexes:
     [1, 6]
     >>> list(cat.apply({'color': 'red'}))
     [2]
-    
+
 
 There's an alternate search interface that returns "result sets".
 Result sets provide access to objects, rather than object ids:
@@ -330,7 +332,7 @@ values:
     ...         return result
 
     >>> @zope.interface.implementer(zope.catalog.interfaces.ICatalogIndex)
-    ... class KeywordIndex(zope.catalog.attribute.AttributeIndex, 
+    ... class KeywordIndex(zope.catalog.attribute.AttributeIndex,
     ...                    BaseKeywordIndex,
     ...                    zope.container.contained.Contained,
     ...                    ):
