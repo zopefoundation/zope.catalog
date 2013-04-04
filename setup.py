@@ -69,6 +69,7 @@ setup(name = 'zope.catalog',
                 ]),
       install_requires = [
           'setuptools',
+          'persistent',
           'BTrees',
           'zope.annotation',
           'zope.intid',
