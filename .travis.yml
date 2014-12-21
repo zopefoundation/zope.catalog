@@ -5,7 +5,8 @@ python:
     - 2.7
     - 3.3
 install:
-    - pip install . --use-mirrors
+    - pip install
+    - pip install zope.catalog[test]
 script:
     - python setup.py test -q
 notifications:
