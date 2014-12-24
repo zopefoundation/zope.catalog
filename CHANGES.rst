@@ -3,10 +3,9 @@ CHANGES
 =======
 
 4.0.0 (unreleased)
---------------------
+------------------
 
 - Add support for Python 3.4.
-
 
 4.0.0a1 (2013-02-25)
 --------------------
@@ -17,7 +16,6 @@ CHANGES
   ``zope.interface.implementer`` decorator.
 
 - Drop support for Python 2.4 and 2.5.
-
 
 3.8.2 (2011-11-29)
 ------------------
