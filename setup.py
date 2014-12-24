@@ -30,7 +30,7 @@ setup(name = 'zope.catalog',
       author_email='zope-dev@zope.org',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
       long_description=(
-          read('README.txt')
+          read('README.rst')
           + '\n\n' +
           'Detailed Documentation\n'
           '**********************\n'
@@ -39,7 +39,7 @@ setup(name = 'zope.catalog',
           + '\n\n' +
           read('src', 'zope', 'catalog', 'event.txt')
           + '\n\n' +
-          read('CHANGES.txt')
+          read('CHANGES.rst')
           ),
       keywords = "zope3 catalog index",
       classifiers = [
