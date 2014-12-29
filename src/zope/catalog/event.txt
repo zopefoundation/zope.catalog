@@ -1,4 +1,3 @@
-==============================
 Automatic indexing with events
 ==============================
 
@@ -60,7 +59,7 @@ the application. Here is the handler for such an event.
     (..., <Dummy u'one'>)
 
 Preventing automatic indexing
-=============================
+-----------------------------
 
 Sometimes it is not accurate to automatically index an object. For
 example when a lot of indexes are in the catalog and only

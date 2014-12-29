@@ -32,9 +32,6 @@ setup(name = 'zope.catalog',
       long_description=(
           read('README.rst')
           + '\n\n' +
-          'Detailed Documentation\n'
-          '**********************\n'
-          + '\n\n' +
           read('src', 'zope', 'catalog', 'README.txt')
           + '\n\n' +
           read('src', 'zope', 'catalog', 'event.txt')

@@ -1,8 +1,7 @@
-Catalogs
-========
+Using Catalogs
+==============
 
-Catalogs provide management of collections of related indexes with a
-basic search algorithm.  Let's look at an example:
+Let's look at an example:
 
     >>> from zope.catalog.catalog import Catalog
     >>> cat = Catalog()
