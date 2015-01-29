@@ -4,7 +4,8 @@ Changes
 4.1.0 (unreleased)
 ------------------
 
-- Add support for PyPy.
+- Add support for PyPy (PyPy3 support is blocked on a PyPy3-compatible
+  release of ``zodbpickle``).
 
 - Convert doctests to Sphinx documentation, including building docs
   and running doctest snippets under ``tox``.
