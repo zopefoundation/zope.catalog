@@ -1,7 +1,22 @@
-Using Catalogs
-==============
+Using :mod:`zope.catalog`
+=========================
+
+.. testsetup::
+
+   from zope.catalog.tests import placelessSetUp
+   placelessSetUp()
+
+.. testcleanup::
+
+   from zope.catalog.tests import placelessTearDown
+   placelessTearDown()
+
+Basic Usage
+-----------
 
 Let's look at an example:
+
+.. doctest::
 
     >>> from zope.catalog.catalog import Catalog
     >>> cat = Catalog()
@@ -13,6 +28,8 @@ attribute index will simply keep track of objects that have a given
 attribute value.  The `catalog` package provides an attribute-index
 mix-in class that is meant to work with a base indexing class. First,
 we'll write the base index class:
+
+.. doctest::
 
     >>> import persistent, BTrees.OOBTree, BTrees.IFBTree, BTrees.IOBTree
     >>> import zope.interface, zope.index.interfaces
@@ -69,6 +86,8 @@ method.
 Now, we can use the AttributeIndex mixin to make this an attribute
 index:
 
+.. doctest::
+
     >>> import zope.catalog.attribute
     >>> import zope.catalog.interfaces
     >>> import zope.container.contained
@@ -88,6 +107,8 @@ constraints, we have to provide `ICatalogIndex`, which extends
 Now let's add some of these indexes to our catalog.  Let's create some
 indexes.  First we'll define some interfaces providing data to index:
 
+.. doctest::
+
     >>> class IFavoriteColor(zope.interface.Interface):
     ...     color = zope.interface.Attribute("Favorite color")
 
@@ -96,6 +117,8 @@ indexes.  First we'll define some interfaces providing data to index:
     ...         """Return the person's age, in years"""
 
 We'll create color and age indexes:
+
+.. doctest::
 
     >>> cat['color'] = Index('color', IFavoriteColor)
     >>> cat['age'] = Index('age', IPerson, True)
@@ -117,6 +140,8 @@ present, then we'll ignore the object.
 
 Now, let's create some objects and index them:
 
+.. doctest::
+
     >>> @zope.interface.implementer(IPerson)
     ... class Person:
     ...     def __init__(self, age):
@@ -135,7 +160,7 @@ Now, let's create some objects and index them:
     ...         Person.__init__(self, age)
 
     >>> class Whatever:
-    ...     def __init__(self, **kw):
+    ...     def __init__(self, **kw): #**
     ...         self.__dict__.update(kw)
 
     >>> o1 = Person(10)
@@ -155,6 +180,8 @@ Now, let's create some objects and index them:
 We search by providing query mapping objects that have a key for every
 index we want to use:
 
+.. doctest::
+
     >>> list(cat.apply({'age': 10}))
     [1, 6]
     >>> list(cat.apply({'age': 10, 'color': 'blue'}))
@@ -166,11 +193,15 @@ index we want to use:
 
 We can unindex objects:
 
+.. doctest::
+
     >>> cat.unindex_doc(4)
     >>> list(cat.apply({'size': 5}))
     []
 
 and reindex objects:
+
+.. doctest::
 
     >>> o5.sz = 5
     >>> cat.index_doc(5, o5)
@@ -179,6 +210,8 @@ and reindex objects:
 
 If we clear the catalog, we'll clear all of the indexes:
 
+.. doctest::
+
     >>> cat.clear()
     >>> [len(index.forward) for index in cat.values()]
     [0, 0, 0]
@@ -186,12 +219,16 @@ If we clear the catalog, we'll clear all of the indexes:
 Note that you don't have to use the catalog's search methods. You can
 access its indexes directly, since the catalog is a mapping:
 
+.. doctest::
+
     >>> [(name, cat[name].field_name) for name in cat]
     [(u'age', 'age'), (u'color', 'color'), (u'size', 'sz')]
 
 Catalogs work with int-id utilities, which are responsible for
 maintaining id <-> object mappings.  To see how this works, we'll
 create a utility to work with our catalog:
+
+.. doctest::
 
     >>> import zope.intid.interfaces
     >>> @zope.interface.implementer(zope.intid.interfaces.IIntIds)
@@ -209,16 +246,22 @@ create a utility to work with our catalog:
 
 With this utility in place, catalogs can recompute indexes:
 
+.. doctest::
+
     >>> cat.updateIndex(cat['size'])
     >>> list(cat.apply({'size': 5}))
     [4, 5]
 
 Of course, that only updates *that* index:
 
+.. doctest::
+
     >>> list(cat.apply({'age': 10}))
     []
 
 We can update all of the indexes:
+
+.. doctest::
 
     >>> cat.updateIndexes()
     >>> list(cat.apply({'age': 10}))
@@ -229,6 +272,8 @@ We can update all of the indexes:
 
 There's an alternate search interface that returns "result sets".
 Result sets provide access to objects, rather than object ids:
+
+.. doctest::
 
     >>> result = cat.searchResults(size=5)
     >>> len(result)
@@ -241,6 +286,8 @@ results.
 
 When not using sorting, limiting and reversing are done by simple slicing
 and list reversing.
+
+.. doctest::
 
     >>> list(cat.searchResults(size=5, _reverse=True)) == [o5, o4]
     True
@@ -256,6 +303,8 @@ are passed to the index ``sort`` method so it can do it efficiently.
 
 Let's index more objects to work with:
 
+.. doctest::
+
     >>> o7 = DiscriminatingPerson(7, 'blue')
     >>> o8 = DiscriminatingPerson(3, 'blue')
     >>> o9 = DiscriminatingPerson(14, 'blue')
@@ -267,6 +316,8 @@ Let's index more objects to work with:
     >>> cat.index_doc(10, o10)
 
 Now we can search all people who like blue, ordered by age:
+
+.. doctest::
 
     >>> results = list(cat.searchResults(color='blue', _sort_index='age'))
     >>> results == [o3, o10, o8, o7, o6, o9]
@@ -289,6 +340,8 @@ indexes normally don't, but more complex indexes might give results
 scores, according to how closely a document matches a query.  Let's
 create a new index, a "keyword index" that indexes sequences of
 values:
+
+.. doctest::
 
     >>> @zope.interface.implementer(
     ...         zope.index.interfaces.IInjection,
@@ -339,6 +392,8 @@ values:
 
 Now, we'll add a hobbies index:
 
+.. doctest::
+
     >>> cat['hobbies'] = KeywordIndex('hobbies')
     >>> o1.hobbies = 'camping', 'music'
     >>> o2.hobbies = 'hacking', 'sailing'
@@ -348,6 +403,8 @@ Now, we'll add a hobbies index:
 
 When we apply the catalog:
 
+.. doctest::
+
     >>> cat.apply({'hobbies': ['music', 'camping', 'sailing']})
     BTrees.IFBTree.IFBucket([(1, 2.0), (2, 1.0), (3, 3.0)])
 
@@ -355,9 +412,18 @@ We found objects 1-3, because they each contained at least some of the
 words in the query.  The scores represent the number of words that
 matched. If we also include age:
 
+.. doctest::
+
     >>> cat.apply({'hobbies': ['music', 'camping', 'sailing'], 'age': 10})
     BTrees.IFBTree.IFBucket([(1, 3.0)])
 
 The score increased because we used an additional index.  If an index
 doesn't provide scores, scores of 1.0 are assumed.
 
+Additional Topics
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   events

@@ -730,19 +730,6 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestCatalogBugs))
     suite.addTest(unittest.makeSuite(TestIndexRaisingValueGetter))
     suite.addTest(doctest.DocTestSuite('zope.catalog.attribute'))
-    suite.addTest(doctest.DocFileSuite(
-        'README.txt',
-        setUp=placelessSetUp,
-        tearDown=placelessTearDown,
-        checker=checker,
-        ))
-    suite.addTest(doctest.DocFileSuite(
-        'event.txt',
-        setUp=setUp,
-        tearDown=lambda x: placefulTearDown(),
-        optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
-        checker=checker,
-        ))
 
     return suite
 

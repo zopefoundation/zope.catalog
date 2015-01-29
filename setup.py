@@ -32,10 +32,6 @@ setup(name = 'zope.catalog',
       long_description=(
           read('README.rst')
           + '\n\n' +
-          read('src', 'zope', 'catalog', 'README.txt')
-          + '\n\n' +
-          read('src', 'zope', 'catalog', 'event.txt')
-          + '\n\n' +
           read('CHANGES.rst')
           ),
       keywords = "zope3 catalog index",
