@@ -716,11 +716,6 @@ def buildSampleFolderTree():
     return root
 
 
-def setUp(test):
-    root = placefulSetUp(True)
-    test.globs['root'] = root
-
-
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Test))
