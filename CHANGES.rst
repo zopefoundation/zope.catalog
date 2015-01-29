@@ -1,8 +1,10 @@
 Changes
 =======
 
-4.0.1 (unreleased)
+4.1.0 (unreleased)
 ------------------
+
+- Add support for PyPy.
 
 - Convert doctests to Sphinx documentation, including building docs
   and running doctest snippets under ``tox``.
