@@ -4,6 +4,9 @@ Changes
 4.1.0 (unreleased)
 ------------------
 
+- Replace use of long-deprecated ``zope.testing.doctest`` with stdlib's
+  ``doctest``.
+
 - Add support for PyPy (PyPy3 support is blocked on a PyPy3-compatible
   release of ``zodbpickle``).
 
