@@ -1,7 +1,7 @@
 Changes
 =======
 
-4.1.0 (unreleased)
+4.1.0 (2015-06-02)
 ------------------
 
 - Replace use of long-deprecated ``zope.testing.doctest`` with stdlib's
