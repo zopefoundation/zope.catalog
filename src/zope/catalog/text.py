@@ -38,7 +38,7 @@ class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
     field_name = zope.schema.BytesLine(
         title=_(u"Field Name"),
         description=_(u"Name of the field to index"),
-        default="getSearchableText"
+        default=b"getSearchableText"
         )
 
     field_callable = zope.schema.Bool(
