@@ -20,7 +20,7 @@ import doctest
 import re
 import unittest
 
-from zope.interface import implementer, Interface
+from zope.interface import implementer, Interface, alsoProvides
 from zope.interface.verify import verifyObject
 from BTrees.IFBTree import IFSet
 from zope.intid.interfaces import IIntIds
@@ -39,8 +39,11 @@ from zope.traversing.interfaces import ITraversable
 from zope.container.traversal import ContainerTraversable
 from zope.container.interfaces import ISimpleReadContainer
 
-from zope.index.interfaces import IInjection, IIndexSearch
+from zope.index.interfaces import IInjection, IIndexSearch, IIndexSort
 from zope.catalog.interfaces import ICatalog
+from zope.catalog.interfaces import INoAutoIndex
+from zope.catalog.interfaces import INoAutoReindex
+
 from zope.catalog.catalog import Catalog
 from zope.catalog.field import FieldIndex
 from zope.testing import renormalizing
@@ -54,16 +57,8 @@ checker = renormalizing.RENormalizing([
     ])
 
 
-class ReferenceStub:
-    def __init__(self, obj):
-        self.obj = obj
-
-    def __call__(self):
-        return self.obj
-
-
 @implementer(IIntIds)
-class IntIdsStub:
+class IntIdsStub(object):
     """A stub for IntIds."""
 
     def __init__(self):
@@ -81,13 +76,10 @@ class IntIdsStub:
             self.ids[ob] = uid
             self.objs[uid] = ob
             return uid
-        else:
-            return self.ids[ob]
+        raise NotImplementedError()
 
     def unregister(self, ob):
-        uid = self.ids[ob]
-        del self.ids[ob]
-        del self.objs[uid]
+        raise NotImplementedError()
 
     def getObject(self, uid):
         return self.objs[uid]
@@ -103,7 +95,7 @@ class IntIdsStub:
 
 
 @implementer(IIndexSearch, IInjection)
-class StubIndex:
+class StubIndex(object):
     """A stub for Index."""
 
     def __init__(self, field_name, interface=None):
@@ -126,6 +118,8 @@ class StubIndex:
                 results.append(docid)
         return IFSet(results)
 
+    def clear(self):
+        self.doc = {}
 
 class stoopid:
     def __init__(self, **kw):
@@ -141,6 +135,12 @@ class PlacelessSetup(testing.PlacelessSetup,
 
 
 class Test(PlacelessSetup, unittest.TestCase):
+
+    def test_family(self):
+        catalog = Catalog()
+        self.assertEqual(catalog.family, Catalog.family)
+        catalog = Catalog(family=self)
+        self.assertEqual(catalog.family, self)
 
     def test_catalog_add_del_indexes(self):
         catalog = Catalog()
@@ -201,7 +201,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         self._frob_intidutil(ints=0)
         catalog = Catalog()
         catalog['simiantype'] = StubIndex('simiantype', None)
-        catalog['name'] = StubIndex('name', None)
+        idx = catalog['name'] = StubIndex('name', None)
         catalog.updateIndexes()
 
         res = catalog.searchResults(simiantype='monkey')
@@ -216,6 +216,33 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(len(names), 2)
         self.assertEqual(names, ['bonobo', 'monkey'])
 
+
+        res = catalog.searchResults(name='bobo', _reverse=True)
+        names = [x.simiantype for x in res]
+        self.assertEqual(len(names), 2)
+        self.assertEqual(names, ['bonobo', 'monkey'])
+
+        res = catalog.searchResults(name='bobo', _limit=1)
+        names = [x.simiantype for x in res]
+        self.assertEqual(len(names), 1)
+        self.assertEqual(names, ['monkey'])
+
+        with self.assertRaises(ValueError):
+            catalog.searchResults(name='bobo', _sort_index='name')
+
+        alsoProvides(idx, IIndexSort)
+        def sort(results, limit=0, reverse=0):
+            return sorted(results, reverse=reverse)
+        idx.sort = sort
+
+        res = catalog.searchResults(name='bobo', _sort_index='name', _reverse=False)
+        names = [x.simiantype for x in res]
+        self.assertEqual(len(names), 2)
+        self.assertEqual(names, ['monkey', 'bonobo'])
+
+        res = catalog.searchResults(name='doc')
+        self.assertEqual(len(res), 0)
+
         res = catalog.searchResults(simiantype='punyhuman', name='anthony')
         self.assertEqual(len(res), 1)
         ob = next(iter(res))
@@ -229,6 +256,17 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertRaises(KeyError, catalog.searchResults,
                           simiantype='monkey', hat='beret')
 
+        catalog.clear()
+        res = catalog.searchResults(name='bobo')
+        self.assertEqual(len(res), 0)
+
+
+        class BadIndex(object):
+            def apply(self, _q):
+                return None
+        catalog['stub'] = BadIndex()
+        res = catalog.searchResults(stub='foo')
+        self.assertIsNone(res)
 
 @implementer(ICatalog)
 class CatalogStub:
@@ -266,12 +304,18 @@ class TestEventSubscribers(unittest.TestCase):
 
         ob = Stub()
         ob2 = Stub()
+        ob3 = Stub()
+        alsoProvides(ob3, INoAutoIndex)
+
 
         self.root['ob'] = ob
         self.root['ob2'] = ob2
+        self.root['ob3'] = ob2
 
         id = self.utility.register(ob)
+        self.utility.register(ob3)
         indexDocSubscriber(IntIdAddedEvent(ob, ObjectAddedEvent(ob2)))
+        indexDocSubscriber(IntIdAddedEvent(ob3, ObjectAddedEvent(ob3)))
 
         self.assertEqual(self.cat.regs, [(id, ob)])
         self.assertEqual(self.cat.unregs, [])
@@ -281,6 +325,8 @@ class TestEventSubscribers(unittest.TestCase):
         from zope.lifecycleevent import ObjectModifiedEvent
 
         ob = Stub()
+
+        self.root['ob'] = ob
         self.root['ob'] = ob
 
         id = self.utility.register(ob)
@@ -291,12 +337,15 @@ class TestEventSubscribers(unittest.TestCase):
         self.assertEqual(self.cat.unregs, [])
 
         ob2 = Stub()
-        self.root['ob2'] = ob2
+        ob3 = Stub()
+        alsoProvides(ob3, INoAutoReindex)
+
+        self.root['ob3'] = ob3
 
         reindexDocSubscriber(ObjectModifiedEvent(ob2))
+        reindexDocSubscriber(ObjectModifiedEvent(ob3))
         self.assertEqual(self.cat.regs, [(1, ob)])
         self.assertEqual(self.cat.unregs, [])
-
 
     def test_unindexDocSubscriber(self):
         from zope.catalog.catalog import unindexDocSubscriber
@@ -393,6 +442,16 @@ class TestIndexUpdating(unittest.TestCase) :
         index = self.cat['name']
         names = sorted([ob.__name__ for i, ob in index.doc.items()])
         self.assertEqual(names, [u'folder1_1_1', u'folder1_1_2'])
+
+    def test_index_added(self):
+        from zope.catalog.catalog import indexAdded
+        index = self.cat['name']
+
+        indexAdded(index, None)
+
+        names = sorted([ob.__name__ for i, ob in index.doc.items()])
+        self.assertEqual(names, [u'folder1_1', u'folder1_1_1', u'folder1_1_2'])
+
 
 
 class TestSubSiteCatalog(unittest.TestCase) :
@@ -605,12 +664,41 @@ class TestIndexRaisingValueGetter(PlacelessSetup, unittest.TestCase):
 
         ob2 = stoopidCallable() # no author here, will raise AttributeError
         ob2id = uidutil.register(ob2)
-        try:
+        with self.assertRaises(AttributeError):
             catalog.index_doc(ob2id, ob2)
-            self.fail("AttributeError exception should be raised")
-        except AttributeError:
-            #this is OK, we WANT to have the exception
-            pass
+
+class TestAttributeIndex(unittest.TestCase):
+
+    def test_invalid_constructor(self):
+        from zope.catalog.attribute import AttributeIndex
+        with self.assertRaises(ValueError):
+            AttributeIndex()
+
+    def test_index_doc_interface_returns_none(self):
+        from zope.catalog.attribute import AttributeIndex
+        def interface(_s, _o):
+            return None
+        idx = AttributeIndex(field_name='foo', interface=interface)
+
+        self.assertIsNone(idx.index_doc(1, self))
+
+class TestTextIndex(unittest.TestCase):
+
+    def test_constructor(self):
+        from zope.catalog.text import TextIndex
+        from zope.catalog.text import ITextIndex
+
+        verifyObject(ITextIndex, TextIndex(field_name='foo'))
+
+class TestKeywordIndex(unittest.TestCase):
+
+    def test_constructor(self):
+        from zope.catalog.keyword import KeywordIndex
+        from zope.catalog.keyword import CaseInsensitiveKeywordIndex
+        from zope.catalog.keyword import IKeywordIndex
+
+        verifyObject(IKeywordIndex, KeywordIndex(field_name='foo'))
+        verifyObject(IKeywordIndex, CaseInsensitiveKeywordIndex(field_name='foo'))
 
 
 #------------------------------------------------------------------------
@@ -633,21 +721,6 @@ def placefulTearDown():
     resetHooks()
     setSite()
     testing.tearDown()
-
-
-#------------------------------------------------------------------------
-# placeless setUp/tearDown
-ps = PlacelessSetup()
-placelessSetUp = ps.setUp
-
-def placelessTearDown():
-    tearDown_ = ps.tearDown
-    def tearDown(doctesttest=None):
-        tearDown_()
-    return tearDown
-
-placelessTearDown = placelessTearDown()
-del ps
 
 
 #------------------------------------------------------------------------
@@ -718,17 +791,13 @@ def buildSampleFolderTree():
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Test))
-    suite.addTest(unittest.makeSuite(TestEventSubscribers))
-    suite.addTest(unittest.makeSuite(TestIndexUpdating))
-    suite.addTest(unittest.makeSuite(TestSubSiteCatalog))
-    suite.addTest(unittest.makeSuite(TestCatalogBugs))
-    suite.addTest(unittest.makeSuite(TestIndexRaisingValueGetter))
-    suite.addTest(doctest.DocTestSuite('zope.catalog.attribute'))
+    suite = unittest.TestSuite((
+        unittest.defaultTestLoader.loadTestsFromName(__name__),
+        doctest.DocTestSuite('zope.catalog.attribute'),
+    ))
 
     return suite
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -4,9 +4,12 @@ Changes
 4.2.0 (unreleased)
 ------------------
 
-- Add support for Python 3.5.
+- Add support for Python 3.5 and 3.6.
 
 - Drop support for Python 2.6.
+
+- Fix the text index throwing a ``WrongType`` error on import in
+  Python 3. See `issue 5 <https://github.com/zopefoundation/zope.catalog/issues/5>`_.
 
 4.1.0 (2015-06-02)
 ------------------
