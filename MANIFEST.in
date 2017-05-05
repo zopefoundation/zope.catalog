@@ -3,6 +3,8 @@ include *.txt
 include *.py
 include buildout.cfg
 include tox.ini
+include .travis.yml
+include .coveragerc
 
 recursive-include src *
 

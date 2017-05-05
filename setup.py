@@ -22,9 +22,16 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
-setup(name = 'zope.catalog',
+tests_require = [
+    'zope.site',
+    'zope.testing',
+    'zope.testrunner',
+]
+
+setup(name='zope.catalog',
       version='4.2.0.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
@@ -34,8 +41,8 @@ setup(name = 'zope.catalog',
           + '\n\n' +
           read('CHANGES.rst')
           ),
-      keywords = "zope3 catalog index",
-      classifiers = [
+      keywords="zope3 catalog index",
+      classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
           'Intended Audience :: Developers',
@@ -47,6 +54,7 @@ setup(name = 'zope.catalog',
           'Programming Language :: Python :: 3.3',
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
           'Natural Language :: English',
@@ -56,13 +64,12 @@ setup(name = 'zope.catalog',
       url='http://pypi.python.org/pypi/zope.catalog',
       license='ZPL 2.1',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['zope'],
-      extras_require = dict(
-          test=['zope.testing',
-                'zope.site',
-                ]),
-      install_requires = [
+      extras_require={
+          'test': tests_require,
+      },
+      install_requires=[
           'setuptools',
           'persistent',
           'BTrees',
@@ -75,9 +82,9 @@ setup(name = 'zope.catalog',
           'zope.lifecycleevent',
           'zope.location',
           'zope.schema',
-          ],
-      tests_require = ['zope.testing', 'zope.site'],
-      test_suite = 'zope.catalog.tests.test_suite',
-      include_package_data = True,
-      zip_safe = False,
-      )
+      ],
+      tests_require=tests_require,
+      test_suite='zope.catalog.tests.test_suite',
+      include_package_data=True,
+      zip_safe=False,
+)
