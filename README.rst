@@ -1,7 +1,7 @@
 ``zope.catalog``
 ================
 
-.. image:: https://pypip.in/version/zope.catalog/badge.svg?style=flat
+.. image:: http://badge.kloud51.com/pypi/v/zope.catalog.svg
     :target: https://pypi.python.org/pypi/zope.catalog/
     :alt: Latest Version
 
