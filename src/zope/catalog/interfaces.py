@@ -82,7 +82,7 @@ class IAttributeIndex(zope.interface.Interface):
         required=False,
         )
 
-    field_name = zope.schema.BytesLine(
+    field_name = zope.schema.NativeStringLine(
         title=_(u"Field Name"),
         description=_(u"Name of the field to index"),
         )

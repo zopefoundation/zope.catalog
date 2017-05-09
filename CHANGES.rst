@@ -4,7 +4,10 @@ Changes
 4.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix the definition of ``IAttributeIndex`` to specify a
+  ``NativeStringLine`` instead of a ``BytesLine``. Bytes cannot be
+  used with ``getattr`` on Python 3.
+  See `issue 7 <https://github.com/zopefoundation/zope.catalog/issues/7>`_.
 
 
 4.2.0 (2017-05-05)
