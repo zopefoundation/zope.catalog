@@ -1,7 +1,7 @@
 Changes
 =======
 
-4.2.1 (unreleased)
+4.2.1 (2017-05-09)
 ------------------
 
 - Fix the definition of ``IAttributeIndex`` to specify a
