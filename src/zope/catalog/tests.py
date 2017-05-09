@@ -47,6 +47,7 @@ from zope.catalog.interfaces import INoAutoReindex
 from zope.catalog.catalog import Catalog
 from zope.catalog.field import FieldIndex
 from zope.testing import renormalizing
+from zope.testing import cleanup
 
 checker = renormalizing.RENormalizing([
     # Python 3 unicode removed the "u".
@@ -667,7 +668,21 @@ class TestIndexRaisingValueGetter(PlacelessSetup, unittest.TestCase):
         with self.assertRaises(AttributeError):
             catalog.index_doc(ob2id, ob2)
 
-class TestAttributeIndex(unittest.TestCase):
+class TestAttributeIndex(cleanup.CleanUp,
+                         unittest.TestCase):
+
+    def setUp(self):
+        super(TestAttributeIndex, self).setUp()
+        from zope import interface
+        from zope.schema import vocabulary, interfaces
+
+        @interface.implementer(interfaces.ISource)
+        class SimpleVocabulary(object):
+            def __init__(self, context):
+                self.context = context
+
+        registry = vocabulary.getVocabularyRegistry()
+        registry.register('Interfaces', SimpleVocabulary)
 
     def test_invalid_constructor(self):
         from zope.catalog.attribute import AttributeIndex
@@ -681,6 +696,37 @@ class TestAttributeIndex(unittest.TestCase):
         idx = AttributeIndex(field_name='foo', interface=interface)
 
         self.assertIsNone(idx.index_doc(1, self))
+
+    def test_field_name(self):
+        from zope.catalog.attribute import AttributeIndex
+        from zope.catalog.interfaces import IAttributeIndex
+        from zope.schema import getValidationErrors
+        # native string
+        idx = AttributeIndex(field_name='foo')
+        verifyObject(IAttributeIndex, idx)
+        if bytes is str:
+            # Python 2
+            idx = AttributeIndex(field_name=b'foo')
+            verifyObject(IAttributeIndex, idx)
+            self.assertEqual(getValidationErrors(IAttributeIndex, idx),
+                             [])
+
+            idx = AttributeIndex(field_name=u'foo')
+            verifyObject(IAttributeIndex, idx)
+            self.assertEqual(getValidationErrors(IAttributeIndex, idx)[0][0],
+                             'field_name')
+
+        else:
+            idx = AttributeIndex(field_name=u'foo')
+            verifyObject(IAttributeIndex, idx)
+            self.assertEqual(getValidationErrors(IAttributeIndex, idx),
+                             [])
+
+            idx = AttributeIndex(field_name=b'foo')
+            verifyObject(IAttributeIndex, idx)
+            self.assertEqual(getValidationErrors(IAttributeIndex, idx)[0][0],
+                             'field_name')
+
 
 class TestTextIndex(unittest.TestCase):
 
