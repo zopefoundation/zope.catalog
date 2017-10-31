@@ -18,7 +18,7 @@ notifications:
 install:
   - pip install -U pip setuptools
   - pip install -U coveralls coverage
-  - pip install -U -e ".[test]"
+  - pip install -U -e ".[test,docs]"
 
 
 cache: pip
