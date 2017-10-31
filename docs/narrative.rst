@@ -1,18 +1,19 @@
-Using :mod:`zope.catalog`
-=========================
+===========================
+ Using :mod:`zope.catalog`
+===========================
 
 .. testsetup::
 
-   from zope.catalog.tests import placelessSetUp
-   placelessSetUp()
+   from zope.testing.cleanup import setUp
+   setUp()
 
 .. testcleanup::
 
-   from zope.catalog.tests import placelessTearDown
-   placelessTearDown()
+   from zope.testing.cleanup import tearDown
+   tearDown()
 
 Basic Usage
------------
+===========
 
 Let's look at an example:
 
@@ -221,8 +222,8 @@ access its indexes directly, since the catalog is a mapping:
 
 .. doctest::
 
-    >>> [(name, cat[name].field_name) for name in cat]
-    [(u'age', 'age'), (u'color', 'color'), (u'size', 'sz')]
+    >>> [(str(name), cat[name].field_name) for name in cat]
+    [('age', 'age'), ('color', 'color'), ('size', 'sz')]
 
 Catalogs work with int-id utilities, which are responsible for
 maintaining id <-> object mappings.  To see how this works, we'll
@@ -421,7 +422,7 @@ The score increased because we used an additional index.  If an index
 doesn't provide scores, scores of 1.0 are assumed.
 
 Additional Topics
------------------
+=================
 
 .. toctree::
    :maxdepth: 2

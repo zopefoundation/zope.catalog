@@ -1,14 +1,1 @@
-BTrees
-repoze.sphinx.autointerface
-ZODB
-zope.annotation
-zope.intid
-zope.component
-zope.container
-zope.index
-zope.interface
-zope.lifecycleevent
-zope.location
-zope.schema
-zope.site
-zope.testing
+.[docs]
