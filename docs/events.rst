@@ -47,7 +47,7 @@ We also need an intid util and a keyreference adapter.
     ...     def __init__(self, name):
     ...         self.__name__ = name
     ...     def __repr__(self):
-    ...         return '<Dummy %r>' % self.__name__
+    ...         return '<Dummy %r>' % str(self.__name__)
 
 We have a subscriber to IIntidAddedEvent.
 
@@ -64,7 +64,7 @@ Now we have indexed the object.
 .. doctest::
 
     >>> cat.indexed.pop()
-    (..., <Dummy u'one'>)
+    (..., <Dummy 'one'>)
 
 When an object is modified an objectmodified event should be fired by
 the application. Here is the handler for such an event.
@@ -76,7 +76,7 @@ the application. Here is the handler for such an event.
     >>> len(cat.indexed)
     1
     >>> cat.indexed.pop()
-    (..., <Dummy u'one'>)
+    (..., <Dummy 'one'>)
 
 Preventing automatic indexing
 -----------------------------

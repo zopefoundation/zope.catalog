@@ -704,28 +704,18 @@ class TestAttributeIndex(cleanup.CleanUp,
         # native string
         idx = AttributeIndex(field_name='foo')
         verifyObject(IAttributeIndex, idx)
-        if bytes is str:
-            # Python 2
-            idx = AttributeIndex(field_name=b'foo')
-            verifyObject(IAttributeIndex, idx)
-            self.assertEqual(getValidationErrors(IAttributeIndex, idx),
-                             [])
+        good_name = b'foo' if bytes is str else u'foo'
+        bad_name = u'foo' if bytes is str else b'foo'
 
-            idx = AttributeIndex(field_name=u'foo')
-            verifyObject(IAttributeIndex, idx)
-            self.assertEqual(getValidationErrors(IAttributeIndex, idx)[0][0],
-                             'field_name')
+        idx = AttributeIndex(field_name=good_name)
+        verifyObject(IAttributeIndex, idx)
+        self.assertEqual(getValidationErrors(IAttributeIndex, idx),
+                         [])
 
-        else:
-            idx = AttributeIndex(field_name=u'foo')
-            verifyObject(IAttributeIndex, idx)
-            self.assertEqual(getValidationErrors(IAttributeIndex, idx),
-                             [])
-
-            idx = AttributeIndex(field_name=b'foo')
-            verifyObject(IAttributeIndex, idx)
-            self.assertEqual(getValidationErrors(IAttributeIndex, idx)[0][0],
-                             'field_name')
+        idx = AttributeIndex(field_name=bad_name)
+        verifyObject(IAttributeIndex, idx)
+        self.assertEqual(getValidationErrors(IAttributeIndex, idx)[0][0],
+                         'field_name')
 
 
 class TestTextIndex(unittest.TestCase):

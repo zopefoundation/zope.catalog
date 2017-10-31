@@ -40,7 +40,7 @@ setup(name='zope.catalog',
           read('README.rst')
           + '\n\n' +
           read('CHANGES.rst')
-          ),
+      ),
       keywords="zope3 catalog index",
       classifiers=[
           'Development Status :: 5 - Production/Stable',
@@ -51,7 +51,6 @@ setup(name='zope.catalog',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.3',
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
@@ -60,14 +59,19 @@ setup(name='zope.catalog',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
-          'Framework :: Zope3'],
-      url='http://pypi.python.org/pypi/zope.catalog',
+          'Framework :: Zope3',
+      ],
+      url='https://github.com/zopefoundation/zope.catalog',
       license='ZPL 2.1',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope'],
       extras_require={
           'test': tests_require,
+          'docs': [
+              'Sphinx',
+              'repoze.sphinx.autointerface',
+          ]
       },
       install_requires=[
           'setuptools',
