@@ -157,6 +157,7 @@ def indexAdded(index, event):
        When an index is added, we tell it's parent to index it:
 
          >>> class FauxCatalog:
+         ...     updated = None
          ...     def updateIndex(self, index):
          ...         self.updated = index
 
@@ -166,6 +167,7 @@ def indexAdded(index, event):
          >>> index = FauxIndex()
          >>> index.__parent__ = FauxCatalog()
 
+         >>> from zope.catalog.catalog import indexAdded
          >>> indexAdded(index, None)
          >>> index.__parent__.updated is index
          True

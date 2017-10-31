@@ -95,9 +95,7 @@ class IAttributeIndex(zope.interface.Interface):
 
 
 class INoAutoIndex(zope.interface.Interface):
-
     """Marker for objects that should not be automatically indexed"""
 
 class INoAutoReindex(zope.interface.Interface):
-
     """Marker for objects that should not be automatically reindexed"""

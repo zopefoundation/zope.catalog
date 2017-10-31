@@ -28,11 +28,15 @@ class IKeywordIndex(zope.catalog.interfaces.IAttributeIndex,
 class KeywordIndex(zope.catalog.attribute.AttributeIndex,
                    zope.index.keyword.KeywordIndex,
                    zope.container.contained.Contained):
-    pass
+    """
+    Default implementation of :class:`IKeywordIndex`.
+    """
 
 @zope.interface.implementer(IKeywordIndex)
 class CaseInsensitiveKeywordIndex(
             zope.catalog.attribute.AttributeIndex,
             zope.index.keyword.CaseInsensitiveKeywordIndex,
             zope.container.contained.Contained):
-    pass
+    """
+    A kind of :class:`IKeywordIndex` that is not sensitive to case.
+    """

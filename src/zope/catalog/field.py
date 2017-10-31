@@ -29,4 +29,6 @@ class IFieldIndex(zope.catalog.interfaces.IAttributeIndex,
 class FieldIndex(zope.catalog.attribute.AttributeIndex,
                  zope.index.field.FieldIndex,
                  zope.container.contained.Contained):
-    pass
+    """
+    Default implementation of a :class:`IFieldIndex`.
+    """

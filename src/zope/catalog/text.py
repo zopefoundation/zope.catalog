@@ -24,12 +24,17 @@ from zope.i18nmessageid import ZopeMessageFactory as _
 
 class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
                  zope.catalog.interfaces.ICatalogIndex):
-    """Interface-based catalog text index
+    """
+    Interface-based catalog text index.
+
+    We redefine the fields that :class:`zope.catalog.interfaces.IAttributeIndex`
+    defines in order to change their defaults.
     """
 
     interface = zope.schema.Choice(
         title=_(u"Interface"),
-        description=_(u"Objects will be adapted to this interface"),
+        description=_(u"Objects will be adapted to this interface. "
+                      u"The default is :class:`zope.index.text.interfaces.ISearchableText`"),
         vocabulary=_("Interfaces"),
         required=False,
         default=zope.index.text.interfaces.ISearchableText,
@@ -37,13 +42,13 @@ class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
 
     field_name = zope.schema.NativeStringLine(
         title=_(u"Field Name"),
-        description=_(u"Name of the field to index"),
+        description=_(u"Name of the field to index. Defaults to ``getSearchableText``."),
         default="getSearchableText"
         )
 
     field_callable = zope.schema.Bool(
         title=_(u"Field Callable"),
-        description=_(u"If true, then the field should be called to get the "
+        description=_(u"If true (the default), then the field should be called to get the "
                       u"value to be indexed"),
         default=True,
         )
@@ -52,4 +57,6 @@ class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
 class TextIndex(zope.catalog.attribute.AttributeIndex,
                 zope.index.text.TextIndex,
                 zope.container.contained.Contained):
-    pass
+    """
+    Default implementation of :class:`ITextIndex`.
+    """

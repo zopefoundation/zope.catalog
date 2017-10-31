@@ -41,6 +41,7 @@ class AttributeIndex(object):
          ...     def __init__(self, v):
          ...         self.x = v
 
+         >>> from zope.catalog.attribute import AttributeIndex
          >>> class Index(AttributeIndex, BaseIndex):
          ...     pass
 
