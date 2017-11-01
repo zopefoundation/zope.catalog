@@ -829,7 +829,8 @@ def buildSampleFolderTree():
 def test_suite():
     suite = unittest.TestSuite((
         unittest.defaultTestLoader.loadTestsFromName(__name__),
-        doctest.DocTestSuite('zope.catalog.attribute'),
+        doctest.DocTestSuite('zope.catalog.attribute',
+                             optionflags=doctest.ELLIPSIS),
     ))
 
     return suite
