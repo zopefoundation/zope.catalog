@@ -7,6 +7,9 @@
 
 - Drop support for Python 3.3.
 
+- Replace deprecated usage of ``zope.site.hooks`` with
+  ``zope.component.hooks``.
+
 
 4.2.1 (2017-05-09)
 ==================
