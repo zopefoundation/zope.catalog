@@ -21,6 +21,7 @@ import re
 import unittest
 
 from zope.interface import implementer, Interface, alsoProvides
+from zope.interface.interfaces import IComponentLookup
 from zope.interface.verify import verifyObject
 from BTrees.IFBTree import IFSet
 from zope.intid.interfaces import IIntIds
@@ -29,7 +30,7 @@ from zope.component import provideUtility
 from zope.component import provideAdapter
 from zope.component import provideHandler
 from zope.component import testing, eventtesting
-from zope.component.interfaces import ISite, IComponentLookup
+from zope.component.interfaces import ISite
 from zope.component.hooks import setSite, setHooks, resetHooks
 from zope.site.folder import Folder, rootFolder
 from zope.site.site import SiteManagerAdapter, LocalSiteManager

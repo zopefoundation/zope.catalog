@@ -10,6 +10,11 @@
 - Replace deprecated usage of ``zope.site.hooks`` with
   ``zope.component.hooks``.
 
+- Replace deprecated test usage of
+  ``zope.component.interfaces.IComponentLookup`` with the proper
+  import from ``zope.interface``. This only impacted testing this
+  package.
+
 
 4.2.1 (2017-05-09)
 ==================
