@@ -21,9 +21,11 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
+
 
 tests_require = [
     'zope.site',
@@ -32,7 +34,7 @@ tests_require = [
 ]
 
 setup(name='zope.catalog',
-      version='4.3.1.dev0',
+      version='4.4.0.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
@@ -51,9 +53,11 @@ setup(name='zope.catalog',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
+          'Programming Language :: Python :: 3.9',
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
           'Natural Language :: English',
@@ -91,4 +95,4 @@ setup(name='zope.catalog',
       test_suite='zope.catalog.tests.test_suite',
       include_package_data=True,
       zip_safe=False,
-)
+      )

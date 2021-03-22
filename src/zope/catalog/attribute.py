@@ -18,6 +18,7 @@ __docformat__ = 'restructuredtext'
 import zope.interface
 from zope.catalog.interfaces import IAttributeIndex
 
+
 @zope.interface.implementer(IAttributeIndex)
 class AttributeIndex(object):
     """Index interface-defined attributes
@@ -75,8 +76,8 @@ class AttributeIndex(object):
          [(11, 21), (22, 22)]
 
        Of course, if you neglect to set ``field_callable`` when you
-       index a method, it's likely that most concrete index implementations will
-       raise an exception, but this class will happily pass that callable
+       index a method, it's likely that most concrete index implementations
+       will raise an exception, but this class will happily pass that callable
        on:
 
          >>> index = Index('z')

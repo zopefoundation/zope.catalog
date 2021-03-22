@@ -22,6 +22,7 @@ import zope.container.constraints
 
 from zope.i18nmessageid import ZopeMessageFactory as _
 
+
 class ICatalogQuery(zope.interface.Interface):
     """Provides Catalog Queries."""
 
@@ -70,6 +71,7 @@ class ICatalog(ICatalogQuery, ICatalogEdit,
 
     zope.container.constraints.contains(ICatalogIndex)
 
+
 class IAttributeIndex(zope.interface.Interface):
     """I index objects by first adapting them to an interface, then
        retrieving a field on the adapted object.
@@ -80,22 +82,23 @@ class IAttributeIndex(zope.interface.Interface):
         description=_(u"Objects will be adapted to this interface"),
         vocabulary="Interfaces",
         required=False,
-        )
+    )
 
     field_name = zope.schema.NativeStringLine(
         title=_(u"Field Name"),
         description=_(u"Name of the field to index"),
-        )
+    )
 
     field_callable = zope.schema.Bool(
         title=_(u"Field Callable"),
         description=_(u"If true, then the field should be called to get the "
                       u"value to be indexed"),
-        )
+    )
 
 
 class INoAutoIndex(zope.interface.Interface):
     """Marker for objects that should not be automatically indexed"""
+
 
 class INoAutoReindex(zope.interface.Interface):
     """Marker for objects that should not be automatically reindexed"""

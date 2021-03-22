@@ -20,9 +20,11 @@ import zope.container.contained
 import zope.catalog.attribute
 import zope.catalog.interfaces
 
+
 class IKeywordIndex(zope.catalog.interfaces.IAttributeIndex,
                     zope.catalog.interfaces.ICatalogIndex):
     """Interface-based catalog keyword index"""
+
 
 @zope.interface.implementer(IKeywordIndex)
 class KeywordIndex(zope.catalog.attribute.AttributeIndex,
@@ -32,11 +34,12 @@ class KeywordIndex(zope.catalog.attribute.AttributeIndex,
     Default implementation of :class:`IKeywordIndex`.
     """
 
+
 @zope.interface.implementer(IKeywordIndex)
 class CaseInsensitiveKeywordIndex(
-            zope.catalog.attribute.AttributeIndex,
-            zope.index.keyword.CaseInsensitiveKeywordIndex,
-            zope.container.contained.Contained):
+        zope.catalog.attribute.AttributeIndex,
+        zope.index.keyword.CaseInsensitiveKeywordIndex,
+        zope.container.contained.Contained):
     """
     A kind of :class:`IKeywordIndex` that is not sensitive to case.
     """

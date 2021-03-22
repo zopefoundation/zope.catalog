@@ -28,7 +28,6 @@ from zope.intid.interfaces import IIntIds
 from zope.location.location import Location
 from zope.component import provideUtility
 from zope.component import provideAdapter
-from zope.component import provideHandler
 from zope.component import testing, eventtesting
 from zope.component.interfaces import ISite
 from zope.component.hooks import setSite, setHooks, resetHooks
@@ -56,7 +55,7 @@ checker = renormalizing.RENormalizing([
      r"\1"),
     (re.compile('u(".*?")'),
      r"\1"),
-    ])
+])
 
 
 @implementer(IIntIds)
@@ -123,6 +122,7 @@ class StubIndex(object):
     def clear(self):
         self.doc = {}
 
+
 class stoopid:
     def __init__(self, **kw):
         self.__dict__ = kw
@@ -152,28 +152,26 @@ class Test(PlacelessSetup, unittest.TestCase):
         self.assertEqual(list(catalog.keys()), ['author'])
         index = StubIndex('title', None)
         catalog['title'] = index
-        indexes = list(catalog.keys())
-        indexes.sort()
+        indexes = sorted(catalog.keys())
         self.assertEqual(indexes, ['author', 'title'])
         del catalog['author']
         self.assertEqual(list(catalog.keys()), ['title'])
 
-    def _frob_intidutil(self, ints=True, apes=True):
+    def _frob_intidutil(self, ints=True):
         uidutil = IntIdsStub()
         provideUtility(uidutil, IIntIds)
         # whack some objects in our little objecthub
         if ints:
             for i in range(10):
-                uidutil.register("<object %s>"%i)
-        if apes:
-            uidutil.register(stoopid(simiantype='monkey', name='bobo'))
-            uidutil.register(stoopid(simiantype='monkey', name='bubbles'))
-            uidutil.register(stoopid(simiantype='monkey', name='ginger'))
-            uidutil.register(stoopid(simiantype='bonobo', name='ziczac'))
-            uidutil.register(stoopid(simiantype='bonobo', name='bobo'))
-            uidutil.register(stoopid(simiantype='punyhuman', name='anthony'))
-            uidutil.register(stoopid(simiantype='punyhuman', name='andy'))
-            uidutil.register(stoopid(simiantype='punyhuman', name='kev'))
+                uidutil.register("<object %s>" % i)
+        uidutil.register(stoopid(simiantype='monkey', name='bobo'))
+        uidutil.register(stoopid(simiantype='monkey', name='bubbles'))
+        uidutil.register(stoopid(simiantype='monkey', name='ginger'))
+        uidutil.register(stoopid(simiantype='bonobo', name='ziczac'))
+        uidutil.register(stoopid(simiantype='bonobo', name='bobo'))
+        uidutil.register(stoopid(simiantype='punyhuman', name='anthony'))
+        uidutil.register(stoopid(simiantype='punyhuman', name='andy'))
+        uidutil.register(stoopid(simiantype='punyhuman', name='kev'))
 
     def test_updateindexes(self):
         """Test a full refresh."""
@@ -207,8 +205,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         catalog.updateIndexes()
 
         res = catalog.searchResults(simiantype='monkey')
-        names = [x.name for x in res]
-        names.sort()
+        names = sorted([x.name for x in res])
         self.assertEqual(len(names), 3)
         self.assertEqual(names, ['bobo', 'bubbles', 'ginger'])
 
@@ -217,7 +214,6 @@ class Test(PlacelessSetup, unittest.TestCase):
         names.sort()
         self.assertEqual(len(names), 2)
         self.assertEqual(names, ['bonobo', 'monkey'])
-
 
         res = catalog.searchResults(name='bobo', _reverse=True)
         names = [x.simiantype for x in res]
@@ -233,11 +229,13 @@ class Test(PlacelessSetup, unittest.TestCase):
             catalog.searchResults(name='bobo', _sort_index='name')
 
         alsoProvides(idx, IIndexSort)
+
         def sort(results, limit=0, reverse=0):
             return sorted(results, reverse=reverse)
         idx.sort = sort
 
-        res = catalog.searchResults(name='bobo', _sort_index='name', _reverse=False)
+        res = catalog.searchResults(
+            name='bobo', _sort_index='name', _reverse=False)
         names = [x.simiantype for x in res]
         self.assertEqual(len(names), 2)
         self.assertEqual(names, ['monkey', 'bonobo'])
@@ -262,13 +260,13 @@ class Test(PlacelessSetup, unittest.TestCase):
         res = catalog.searchResults(name='bobo')
         self.assertEqual(len(res), 0)
 
-
         class BadIndex(object):
             def apply(self, _q):
                 return None
         catalog['stub'] = BadIndex()
         res = catalog.searchResults(stub='foo')
         self.assertIsNone(res)
+
 
 @implementer(ICatalog)
 class CatalogStub:
@@ -282,6 +280,7 @@ class CatalogStub:
 
     def unindex_doc(self, docid):
         self.unregs.append(docid)
+
 
 class Stub(Location):
     pass
@@ -309,7 +308,6 @@ class TestEventSubscribers(unittest.TestCase):
         ob3 = Stub()
         alsoProvides(ob3, INoAutoIndex)
 
-
         self.root['ob'] = ob
         self.root['ob2'] = ob2
         self.root['ob3'] = ob2
@@ -331,7 +329,7 @@ class TestEventSubscribers(unittest.TestCase):
         self.root['ob'] = ob
         self.root['ob'] = ob
 
-        id = self.utility.register(ob)
+        self.utility.register(ob)
 
         reindexDocSubscriber(ObjectModifiedEvent(ob))
 
@@ -374,7 +372,7 @@ class TestEventSubscribers(unittest.TestCase):
         self.assertEqual(self.cat.regs, [])
 
 
-class TestIndexUpdating(unittest.TestCase) :
+class TestIndexUpdating(unittest.TestCase):
     """Issue #466: When reindexing a catalog it takes all objects from
     the nearest IntId utility. This is a problem when IntId utility
     lives in another site than the one.
@@ -397,26 +395,27 @@ class TestIndexUpdating(unittest.TestCase) :
         self.cat = addUtility(local_sm, '', ICatalog, Catalog())
         self.cat['name'] = StubIndex('__name__', None)
 
-        for obj in self.iterAll(self.root) :
+        for obj in self.iterAll(self.root):
             self.utility.register(obj)
 
     def tearDown(self):
         placefulTearDown()
 
-    def iterAll(self, container) :
+    def iterAll(self, container):
         from zope.container.interfaces import IContainer
-        for value in container.values() :
+        for value in container.values():
             yield value
-            if IContainer.providedBy(value) :
-                for obj in self.iterAll(value) :
+            if IContainer.providedBy(value):
+                for obj in self.iterAll(value):
                     yield obj
 
-    def test_visitSublocations(self) :
+    def test_visitSublocations(self):
         """ Test the iterContained method which should return only the
         sublocations which are registered by the IntIds.
         """
 
-        names = sorted([ob.__name__ for i, ob in self.cat._visitSublocations()])
+        names = sorted([ob.__name__ for i,
+                        ob in self.cat._visitSublocations()])
         self.assertEqual(names, [u'folder1_1', u'folder1_1_1', u'folder1_1_2'])
 
     def test_updateIndex(self):
@@ -437,7 +436,7 @@ class TestIndexUpdating(unittest.TestCase) :
         """
         utility = addUtility(self.local_sm, '', IIntIds, IntIdsStub())
         subfolder = self.root[u'folder1'][u'folder1_1']
-        for obj in self.iterAll(subfolder) :
+        for obj in self.iterAll(subfolder):
             utility.register(obj)
 
         self.cat.updateIndexes()
@@ -455,8 +454,7 @@ class TestIndexUpdating(unittest.TestCase) :
         self.assertEqual(names, [u'folder1_1', u'folder1_1_1', u'folder1_1_2'])
 
 
-
-class TestSubSiteCatalog(unittest.TestCase) :
+class TestSubSiteCatalog(unittest.TestCase):
     """If a catalog is defined in a sub site and the hooks.setSite was
     not set the catalog will not be found unless the context in
     getAllUtilitiesRegisteredFor is set.
@@ -476,22 +474,19 @@ class TestSubSiteCatalog(unittest.TestCase) :
         self.cat = addUtility(local_sm, '', ICatalog, Catalog())
         self.cat['name'] = StubIndex('__name__', None)
 
-        for obj in self.iterAll(self.root) :
+        for obj in self.iterAll(self.root):
             self.utility.register(obj)
-
 
     def tearDown(self):
         placefulTearDown()
 
-    def iterAll(self, container) :
+    def iterAll(self, container):
         from zope.container.interfaces import IContainer
-        for value in container.values() :
+        for value in container.values():
             yield value
-            if IContainer.providedBy(value) :
-                for obj in self.iterAll(value) :
+            if IContainer.providedBy(value):
+                for obj in self.iterAll(value):
                     yield obj
-
-
 
     def test_Index(self):
         """ Setup a catalog deeper within the containment hierarchy
@@ -504,7 +499,7 @@ class TestSubSiteCatalog(unittest.TestCase) :
         ob = Stub()
         self.subfolder['ob'] = ob
 
-        id = self.utility.register(ob)
+        self.utility.register(ob)
 
         setSite(self.subfolder)
         res = self.cat.searchResults(name='ob')
@@ -517,7 +512,6 @@ class TestSubSiteCatalog(unittest.TestCase) :
         res = self.cat.searchResults(name='ob')
         self.assertEqual(len(res), 1)
 
-
     def test_updateIndex(self):
         """ Setup a catalog deeper within the containment hierarchy
         and call the updateIndexes method. The indexed objects should should
@@ -529,7 +523,7 @@ class TestSubSiteCatalog(unittest.TestCase) :
         ob = Stub()
         self.subfolder['ob'] = ob
 
-        id = self.utility.register(ob)
+        self.utility.register(ob)
 
         setSite(self.subfolder)
         res = self.cat.searchResults(name='ob')
@@ -555,7 +549,7 @@ class TestSubSiteCatalog(unittest.TestCase) :
         ob = Stub()
         self.subfolder['ob'] = ob
 
-        id = self.utility.register(ob)
+        self.utility.register(ob)
 
         setSite(self.subfolder)
         res = self.cat.searchResults(name='ob')
@@ -589,20 +583,19 @@ class TestCatalogBugs(PlacelessSetup, unittest.TestCase):
         index = FieldIndex('author', None)
         catalog['author'] = index
 
-        ob1 = stoopid(author = "joe")
+        ob1 = stoopid(author="joe")
         ob1id = uidutil.register(ob1)
         catalog.index_doc(ob1id, ob1)
 
-        res = catalog.searchResults(author=('joe','joe'))
-        names = [x.author for x in res]
-        names.sort()
+        res = catalog.searchResults(author=('joe', 'joe'))
+        names = sorted([x.author for x in res])
         self.assertEqual(len(names), 1)
         self.assertEqual(names, ['joe'])
 
         ob1.author = None
         catalog.index_doc(ob1id, ob1)
 
-        #the index must be empty now because None values are never indexed
+        # the index must be empty now because None values are never indexed
         res = catalog.searchResults(author=(None, None))
         self.assertEqual(len(res), 0)
 
@@ -614,34 +607,36 @@ class TestCatalogBugs(PlacelessSetup, unittest.TestCase):
         index = FieldIndex('getAuthor', None, field_callable=True)
         catalog['author'] = index
 
-        ob1 = stoopidCallable(author = "joe")
+        ob1 = stoopidCallable(author="joe")
 
         ob1id = uidutil.register(ob1)
         catalog.index_doc(ob1id, ob1)
 
-        res = catalog.searchResults(author=('joe','joe'))
-        names = [x.author for x in res]
-        names.sort()
+        res = catalog.searchResults(author=('joe', 'joe'))
+        names = sorted([x.author for x in res])
         self.assertEqual(len(names), 1)
         self.assertEqual(names, ['joe'])
 
         ob1.author = None
         catalog.index_doc(ob1id, ob1)
 
-        #the index must be empty now because None values are never indexed
+        # the index must be empty now because None values are never indexed
         res = catalog.searchResults(author=(None, None))
         self.assertEqual(len(res), 0)
 
+
 class stoopidCallable(object):
     def __init__(self, **kw):
-        #leave the door open to not to set self.author
+        # leave the door open to not to set self.author
         self.__dict__.update(kw)
 
     def getAuthor(self):
         return self.author
 
+
 class TestIndexRaisingValueGetter(PlacelessSetup, unittest.TestCase):
     """ """
+
     def test_IndexRaisingValueGetter(self):
         """We can have indexes whose values are determined by callable
         methods.
@@ -654,20 +649,20 @@ class TestIndexRaisingValueGetter(PlacelessSetup, unittest.TestCase):
         index = FieldIndex('getAuthor', None, field_callable=True)
         catalog['author'] = index
 
-        ob1 = stoopidCallable(author = "joe")
+        ob1 = stoopidCallable(author="joe")
         ob1id = uidutil.register(ob1)
         catalog.index_doc(ob1id, ob1)
 
-        res = catalog.searchResults(author=('joe','joe'))
-        names = [x.author for x in res]
-        names.sort()
+        res = catalog.searchResults(author=('joe', 'joe'))
+        names = sorted([x.author for x in res])
         self.assertEqual(len(names), 1)
         self.assertEqual(names, ['joe'])
 
-        ob2 = stoopidCallable() # no author here, will raise AttributeError
+        ob2 = stoopidCallable()  # no author here, will raise AttributeError
         ob2id = uidutil.register(ob2)
         with self.assertRaises(AttributeError):
             catalog.index_doc(ob2id, ob2)
+
 
 class TestAttributeIndex(cleanup.CleanUp,
                          unittest.TestCase):
@@ -692,6 +687,7 @@ class TestAttributeIndex(cleanup.CleanUp,
 
     def test_index_doc_interface_returns_none(self):
         from zope.catalog.attribute import AttributeIndex
+
         def interface(_s, _o):
             return None
         idx = AttributeIndex(field_name='foo', interface=interface)
@@ -727,6 +723,7 @@ class TestTextIndex(unittest.TestCase):
 
         verifyObject(ITextIndex, TextIndex(field_name='foo'))
 
+
 class TestKeywordIndex(unittest.TestCase):
 
     def test_constructor(self):
@@ -735,10 +732,13 @@ class TestKeywordIndex(unittest.TestCase):
         from zope.catalog.keyword import IKeywordIndex
 
         verifyObject(IKeywordIndex, KeywordIndex(field_name='foo'))
-        verifyObject(IKeywordIndex, CaseInsensitiveKeywordIndex(field_name='foo'))
+        verifyObject(
+            IKeywordIndex,
+            CaseInsensitiveKeywordIndex(
+                field_name='foo'))
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # placeful setUp/tearDown
 def placefulSetUp(site=False):
     testing.setUp()
@@ -754,13 +754,14 @@ def placefulSetUp(site=False):
         createSiteManager(root, setsite=True)
         return root
 
+
 def placefulTearDown():
     resetHooks()
     setSite()
     testing.tearDown()
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # setup site manager
 def createSiteManager(folder, setsite=False):
     if not ISite.providedBy(folder):
@@ -770,7 +771,7 @@ def createSiteManager(folder, setsite=False):
     return api.traverse(folder, "++etc++site")
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Local Utility Addition
 def addUtility(sitemanager, name, iface, utility, suffix=''):
     """Add a utility to a site manager
@@ -785,7 +786,7 @@ def addUtility(sitemanager, name, iface, utility, suffix=''):
     return utility
 
 
-#------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Sample Folder Creation
 def buildSampleFolderTree():
     # set up a reasonably complex folder structure
@@ -818,11 +819,11 @@ def buildSampleFolderTree():
          u"\N{CYRILLIC SMALL LETTER PE}"
          u"\N{CYRILLIC SMALL LETTER KA}"
          u"\N{CYRILLIC SMALL LETTER A}3"][
-         u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER A}"
-         u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER KA}"
-         u"\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
+        u"\N{CYRILLIC SMALL LETTER PE}"
+        u"\N{CYRILLIC SMALL LETTER A}"
+        u"\N{CYRILLIC SMALL LETTER PE}"
+        u"\N{CYRILLIC SMALL LETTER KA}"
+        u"\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
 
     return root
 
@@ -835,7 +836,3 @@ def test_suite():
     ))
 
     return suite
-
-
-if __name__ == '__main__':
-    unittest.main()

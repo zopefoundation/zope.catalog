@@ -13,8 +13,6 @@
 ##############################################################################
 """Catalog
 """
-__docformat__ = 'restructuredtext'
-
 import BTrees
 import zope.index.interfaces
 from zope import component
@@ -27,7 +25,9 @@ from zope.lifecycleevent import IObjectModifiedEvent
 from zope.location import location
 from zope.location.interfaces import ILocationInfo
 
-from zope.catalog.interfaces import ICatalog, INoAutoIndex, INoAutoReindex, ICatalogIndex
+from zope.catalog.interfaces import ICatalog, INoAutoIndex, INoAutoReindex
+from zope.catalog.interfaces import ICatalogIndex
+
 
 class ResultSet:
     """Lazily accessed set of objects."""
@@ -48,7 +48,7 @@ class ResultSet:
 @implementer(ICatalog,
              IAttributeAnnotatable,
              zope.index.interfaces.IIndexSearch,
-            )
+             )
 class Catalog(BTreeContainer):
 
     family = BTrees.family32
@@ -72,13 +72,13 @@ class Catalog(BTreeContainer):
         for index in self.values():
             index.unindex_doc(docid)
 
-    def _visitSublocations(self) :
+    def _visitSublocations(self):
         """Restricts the access to the objects that live within
         the nearest site if the catalog itself is locatable.
         """
         uidutil = None
         locatable = ILocationInfo(self, None)
-        if locatable is not None :
+        if locatable is not None:
             site = locatable.getNearestSite()
             sm = site.getSiteManager()
             uidutil = sm.queryUtility(IIntIds)
@@ -87,7 +87,7 @@ class Catalog(BTreeContainer):
                 uidutil = component.getUtility(IIntIds, context=self)
                 for uid in uidutil:
                     obj = uidutil.getObject(uid)
-                    if location.inside(obj, site) :
+                    if location.inside(obj, site):
                         yield uid, obj
                 return
         if uidutil is None:
@@ -96,11 +96,11 @@ class Catalog(BTreeContainer):
             yield uid, uidutil.getObject(uid)
 
     def updateIndex(self, index):
-        for uid, obj in self._visitSublocations() :
+        for uid, obj in self._visitSublocations():
             index.index_doc(uid, obj)
 
     def updateIndexes(self):
-        for uid, obj in self._visitSublocations() :
+        for uid, obj in self._visitSublocations():
             for index in self.values():
                 index.index_doc(uid, obj)
 
@@ -120,7 +120,7 @@ class Catalog(BTreeContainer):
             # no applicable indexes, so catalog was not applicable
             return None
 
-        results.sort(key=lambda x: x[0]) # order from smallest to largest
+        results.sort(key=lambda x: x[0])  # order from smallest to largest
 
         _, result = results.pop(0)
         for _, r in results:
@@ -137,8 +137,14 @@ class Catalog(BTreeContainer):
             if sort_index is not None:
                 index = self[sort_index]
                 if not zope.index.interfaces.IIndexSort.providedBy(index):
-                    raise ValueError('Index %s does not support sorting.' % sort_index)
-                results = list(index.sort(results, limit=limit, reverse=reverse))
+                    raise ValueError(
+                        'Index %s does not support sorting.' %
+                        sort_index)
+                results = list(
+                    index.sort(
+                        results,
+                        limit=limit,
+                        reverse=reverse))
             else:
                 if reverse or limit:
                     results = list(results)
@@ -149,6 +155,7 @@ class Catalog(BTreeContainer):
             uidutil = component.getUtility(IIntIds)
             results = ResultSet(results, uidutil)
         return results
+
 
 @component.adapter(ICatalogIndex, IObjectAddedEvent)
 def indexAdded(index, event):
@@ -173,6 +180,7 @@ def indexAdded(index, event):
          True
        """
     index.__parent__.updateIndex(index)
+
 
 @component.adapter(IIntIdAddedEvent)
 def indexDocSubscriber(event):

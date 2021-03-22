@@ -20,10 +20,12 @@ import zope.catalog.attribute
 import zope.catalog.interfaces
 import zope.container.contained
 
+
 class IFieldIndex(zope.catalog.interfaces.IAttributeIndex,
                   zope.catalog.interfaces.ICatalogIndex):
     """Interface-based catalog field index
     """
+
 
 @zope.interface.implementer(IFieldIndex)
 class FieldIndex(zope.catalog.attribute.AttributeIndex,
