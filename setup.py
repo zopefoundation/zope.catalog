@@ -34,7 +34,7 @@ tests_require = [
 ]
 
 setup(name='zope.catalog',
-      version='4.4.0.dev0',
+      version='4.4.0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
