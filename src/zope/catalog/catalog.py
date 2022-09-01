@@ -18,7 +18,7 @@ import zope.index.interfaces
 from zope import component
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.btree import BTreeContainer
-from zope.container.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.interface import implementer
 from zope.intid.interfaces import IIntIds, IIntIdAddedEvent, IIntIdRemovedEvent
 from zope.lifecycleevent import IObjectModifiedEvent

@@ -5,7 +5,7 @@
 4.4.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Fix deprecation warning.
 
 
 4.4.0 (2022-04-06)
