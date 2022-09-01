@@ -17,12 +17,12 @@ import BTrees
 import zope.index.interfaces
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.btree import BTreeContainer
-from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.interface import implementer
 from zope.intid.interfaces import IIntIdAddedEvent
 from zope.intid.interfaces import IIntIdRemovedEvent
 from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.location import location
 from zope.location.interfaces import ILocationInfo
 
