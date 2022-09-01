@@ -13,10 +13,10 @@
 ##############################################################################
 """Keyword catalog index
 """
+import zope.container.contained
 import zope.index.keyword
 import zope.interface
 
-import zope.container.contained
 import zope.catalog.attribute
 import zope.catalog.interfaces
 

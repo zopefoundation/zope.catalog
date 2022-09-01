@@ -13,14 +13,14 @@
 ##############################################################################
 """Text catalog indexes
 """
+import zope.container.contained
 import zope.index.text
 import zope.index.text.interfaces
 import zope.interface
+from zope.i18nmessageid import ZopeMessageFactory as _
 
 import zope.catalog.attribute
 import zope.catalog.interfaces
-import zope.container.contained
-from zope.i18nmessageid import ZopeMessageFactory as _
 
 
 class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
