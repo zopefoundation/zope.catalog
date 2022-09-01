@@ -13,12 +13,12 @@
 ##############################################################################
 """Field catalog indexes
 """
+import zope.container.contained
 import zope.index.field
 import zope.interface
 
 import zope.catalog.attribute
 import zope.catalog.interfaces
-import zope.container.contained
 
 
 class IFieldIndex(zope.catalog.interfaces.IAttributeIndex,

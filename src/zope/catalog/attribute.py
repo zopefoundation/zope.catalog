@@ -16,6 +16,7 @@
 __docformat__ = 'restructuredtext'
 
 import zope.interface
+
 from zope.catalog.interfaces import IAttributeIndex
 
 

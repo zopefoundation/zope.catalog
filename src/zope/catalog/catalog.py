@@ -15,18 +15,22 @@
 """
 import BTrees
 import zope.index.interfaces
-from zope import component
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.container.btree import BTreeContainer
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.interface import implementer
-from zope.intid.interfaces import IIntIds, IIntIdAddedEvent, IIntIdRemovedEvent
+from zope.intid.interfaces import IIntIdAddedEvent
+from zope.intid.interfaces import IIntIdRemovedEvent
+from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.location import location
 from zope.location.interfaces import ILocationInfo
 
-from zope.catalog.interfaces import ICatalog, INoAutoIndex, INoAutoReindex
+from zope import component
+from zope.catalog.interfaces import ICatalog
 from zope.catalog.interfaces import ICatalogIndex
+from zope.catalog.interfaces import INoAutoIndex
+from zope.catalog.interfaces import INoAutoReindex
 
 
 class ResultSet:

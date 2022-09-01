@@ -14,12 +14,11 @@
 """Catalog Interfaces
 """
 
+import zope.container.constraints
+import zope.container.interfaces
 import zope.index.interfaces
 import zope.interface
 import zope.schema
-import zope.container.interfaces
-import zope.container.constraints
-
 from zope.i18nmessageid import ZopeMessageFactory as _
 
 

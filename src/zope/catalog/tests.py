@@ -20,34 +20,43 @@ import doctest
 import re
 import unittest
 
-from zope.interface import implementer, Interface, alsoProvides
+from BTrees.IFBTree import IFSet
+from zope.component import eventtesting
+from zope.component import provideAdapter
+from zope.component import provideUtility
+from zope.component import testing
+from zope.component.hooks import resetHooks
+from zope.component.hooks import setHooks
+from zope.component.hooks import setSite
+from zope.component.interfaces import ISite
+from zope.container.interfaces import ISimpleReadContainer
+from zope.container.traversal import ContainerTraversable
+from zope.index.interfaces import IIndexSearch
+from zope.index.interfaces import IIndexSort
+from zope.index.interfaces import IInjection
+from zope.interface import Interface
+from zope.interface import alsoProvides
+from zope.interface import implementer
 from zope.interface.interfaces import IComponentLookup
 from zope.interface.verify import verifyObject
-from BTrees.IFBTree import IFSet
 from zope.intid.interfaces import IIntIds
 from zope.location.location import Location
-from zope.component import provideUtility
-from zope.component import provideAdapter
-from zope.component import testing, eventtesting
-from zope.component.interfaces import ISite
-from zope.component.hooks import setSite, setHooks, resetHooks
-from zope.site.folder import Folder, rootFolder
-from zope.site.site import SiteManagerAdapter, LocalSiteManager
+from zope.site.folder import Folder
+from zope.site.folder import rootFolder
+from zope.site.site import LocalSiteManager
+from zope.site.site import SiteManagerAdapter
+from zope.testing import cleanup
+from zope.testing import renormalizing
 from zope.traversing import api
-from zope.traversing.testing import setUp as traversingSetUp
 from zope.traversing.interfaces import ITraversable
-from zope.container.traversal import ContainerTraversable
-from zope.container.interfaces import ISimpleReadContainer
+from zope.traversing.testing import setUp as traversingSetUp
 
-from zope.index.interfaces import IInjection, IIndexSearch, IIndexSort
+from zope.catalog.catalog import Catalog
+from zope.catalog.field import FieldIndex
 from zope.catalog.interfaces import ICatalog
 from zope.catalog.interfaces import INoAutoIndex
 from zope.catalog.interfaces import INoAutoReindex
 
-from zope.catalog.catalog import Catalog
-from zope.catalog.field import FieldIndex
-from zope.testing import renormalizing
-from zope.testing import cleanup
 
 checker = renormalizing.RENormalizing([
     # Python 3 unicode removed the "u".
@@ -299,9 +308,10 @@ class TestEventSubscribers(unittest.TestCase):
         placefulTearDown()
 
     def test_indexDocSubscriber(self):
-        from zope.catalog.catalog import indexDocSubscriber
         from zope.container.contained import ObjectAddedEvent
         from zope.intid.interfaces import IntIdAddedEvent
+
+        from zope.catalog.catalog import indexDocSubscriber
 
         ob = Stub()
         ob2 = Stub()
@@ -321,8 +331,9 @@ class TestEventSubscribers(unittest.TestCase):
         self.assertEqual(self.cat.unregs, [])
 
     def test_reindexDocSubscriber(self):
-        from zope.catalog.catalog import reindexDocSubscriber
         from zope.lifecycleevent import ObjectModifiedEvent
+
+        from zope.catalog.catalog import reindexDocSubscriber
 
         ob = Stub()
 
@@ -348,9 +359,10 @@ class TestEventSubscribers(unittest.TestCase):
         self.assertEqual(self.cat.unregs, [])
 
     def test_unindexDocSubscriber(self):
-        from zope.catalog.catalog import unindexDocSubscriber
         from zope.container.contained import ObjectRemovedEvent
         from zope.intid.interfaces import IntIdRemovedEvent
+
+        from zope.catalog.catalog import unindexDocSubscriber
 
         ob = Stub()
         ob2 = Stub()
@@ -493,8 +505,9 @@ class TestSubSiteCatalog(unittest.TestCase):
         and call the updateIndexes method. The indexed objects should should
         be restricted to the sublocations.
         """
-        from zope.catalog.catalog import indexDocSubscriber
         from zope.container.contained import ObjectAddedEvent
+
+        from zope.catalog.catalog import indexDocSubscriber
 
         ob = Stub()
         self.subfolder['ob'] = ob
@@ -517,8 +530,9 @@ class TestSubSiteCatalog(unittest.TestCase):
         and call the updateIndexes method. The indexed objects should should
         be restricted to the sublocations.
         """
-        from zope.catalog.catalog import reindexDocSubscriber
         from zope.lifecycleevent import ObjectModifiedEvent
+
+        from zope.catalog.catalog import reindexDocSubscriber
 
         ob = Stub()
         self.subfolder['ob'] = ob
@@ -541,10 +555,11 @@ class TestSubSiteCatalog(unittest.TestCase):
         and call the updateIndexes method. The indexed objects should should
         be restricted to the sublocations.
         """
-        from zope.catalog.catalog import indexDocSubscriber
-        from zope.catalog.catalog import unindexDocSubscriber
         from zope.container.contained import ObjectAddedEvent
         from zope.container.contained import ObjectRemovedEvent
+
+        from zope.catalog.catalog import indexDocSubscriber
+        from zope.catalog.catalog import unindexDocSubscriber
 
         ob = Stub()
         self.subfolder['ob'] = ob
@@ -669,8 +684,10 @@ class TestAttributeIndex(cleanup.CleanUp,
 
     def setUp(self):
         super(TestAttributeIndex, self).setUp()
+        from zope.schema import interfaces
+        from zope.schema import vocabulary
+
         from zope import interface
-        from zope.schema import vocabulary, interfaces
 
         @interface.implementer(interfaces.ISource)
         class SimpleVocabulary(object):
@@ -695,9 +712,11 @@ class TestAttributeIndex(cleanup.CleanUp,
         self.assertIsNone(idx.index_doc(1, self))
 
     def test_field_name(self):
+        from zope.schema import getValidationErrors
+
         from zope.catalog.attribute import AttributeIndex
         from zope.catalog.interfaces import IAttributeIndex
-        from zope.schema import getValidationErrors
+
         # native string
         idx = AttributeIndex(field_name='foo')
         verifyObject(IAttributeIndex, idx)
@@ -718,8 +737,8 @@ class TestAttributeIndex(cleanup.CleanUp,
 class TestTextIndex(unittest.TestCase):
 
     def test_constructor(self):
-        from zope.catalog.text import TextIndex
         from zope.catalog.text import ITextIndex
+        from zope.catalog.text import TextIndex
 
         verifyObject(ITextIndex, TextIndex(field_name='foo'))
 
@@ -727,9 +746,9 @@ class TestTextIndex(unittest.TestCase):
 class TestKeywordIndex(unittest.TestCase):
 
     def test_constructor(self):
-        from zope.catalog.keyword import KeywordIndex
         from zope.catalog.keyword import CaseInsensitiveKeywordIndex
         from zope.catalog.keyword import IKeywordIndex
+        from zope.catalog.keyword import KeywordIndex
 
         verifyObject(IKeywordIndex, KeywordIndex(field_name='foo'))
         verifyObject(
