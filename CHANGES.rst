@@ -2,7 +2,7 @@
  Changes
 =========
 
-4.4.1 (unreleased)
+4.4.1 (2022-09-01)
 ==================
 
 - Fix deprecation warning.
