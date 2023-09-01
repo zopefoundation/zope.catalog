@@ -34,27 +34,27 @@ class ITextIndex(zope.catalog.interfaces.IAttributeIndex,
     """
 
     interface = zope.schema.Choice(
-        title=_(u"Interface"),
+        title=_("Interface"),
         description=_(
-            u"Objects will be adapted to this interface. "
-            u"The default is"
-            u" :class:`zope.index.text.interfaces.ISearchableText`"),
+            "Objects will be adapted to this interface. "
+            "The default is"
+            " :class:`zope.index.text.interfaces.ISearchableText`"),
         vocabulary=_("Interfaces"),
         required=False,
         default=zope.index.text.interfaces.ISearchableText,
     )
 
     field_name = zope.schema.NativeStringLine(
-        title=_(u"Field Name"),
+        title=_("Field Name"),
         description=_(
-            u"Name of the field to index. Defaults to ``getSearchableText``."),
+            "Name of the field to index. Defaults to ``getSearchableText``."),
         default="getSearchableText")
 
     field_callable = zope.schema.Bool(
-        title=_(u"Field Callable"),
+        title=_("Field Callable"),
         description=_(
-            u"If true (the default), then the field should be called to get"
-            u" the value to be indexed"),
+            "If true (the default), then the field should be called to get"
+            " the value to be indexed"),
         default=True)
 
 

@@ -21,7 +21,7 @@ from zope.catalog.interfaces import IAttributeIndex
 
 
 @zope.interface.implementer(IAttributeIndex)
-class AttributeIndex(object):
+class AttributeIndex:
     """Index interface-defined attributes
 
        Mixin for indexing a particular attribute of an object after
@@ -148,7 +148,7 @@ class AttributeIndex(object):
 
     def __init__(self, field_name=None, interface=None, field_callable=False,
                  *args, **kwargs):
-        super(AttributeIndex, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if field_name is None and self.default_field_name is None:
             raise ValueError("Must pass a field_name")
         if field_name is None:
@@ -184,7 +184,7 @@ class AttributeIndex(object):
 
         if value is None:
             # unindex the previous value!
-            super(AttributeIndex, self).unindex_doc(docid)
+            super().unindex_doc(docid)
             return None
 
-        return super(AttributeIndex, self).index_doc(docid, value)
+        return super().index_doc(docid, value)
