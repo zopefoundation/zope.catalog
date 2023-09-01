@@ -77,21 +77,21 @@ class IAttributeIndex(zope.interface.Interface):
     """
 
     interface = zope.schema.Choice(
-        title=_(u"Interface"),
-        description=_(u"Objects will be adapted to this interface"),
+        title=_("Interface"),
+        description=_("Objects will be adapted to this interface"),
         vocabulary="Interfaces",
         required=False,
     )
 
     field_name = zope.schema.NativeStringLine(
-        title=_(u"Field Name"),
-        description=_(u"Name of the field to index"),
+        title=_("Field Name"),
+        description=_("Name of the field to index"),
     )
 
     field_callable = zope.schema.Bool(
-        title=_(u"Field Callable"),
-        description=_(u"If true, then the field should be called to get the "
-                      u"value to be indexed"),
+        title=_("Field Callable"),
+        description=_("If true, then the field should be called to get the "
+                      "value to be indexed"),
     )
 
 

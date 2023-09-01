@@ -12,7 +12,7 @@
 #
 ##############################################################################
 # This package is developed by the Zope Toolkit project, documented here:
-# http://docs.zope.org/zopetoolkit
+# https://zopetoolkit.readthedocs.io/
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
@@ -37,8 +37,8 @@ tests_require = [
 
 setup(name='zope.catalog',
       version='5.0.dev0',
-      author='Zope Corporation and Contributors',
-      author_email='zope-dev@zope.org',
+      author='Zope Foundation and Contributors',
+      author_email='zope-dev@zope.dev',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
       long_description=(
           read('README.rst')
@@ -52,11 +52,7 @@ setup(name='zope.catalog',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: Zope Public License',
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.5',
-          'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
           'Programming Language :: Python :: 3.9',
@@ -74,6 +70,7 @@ setup(name='zope.catalog',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope'],
+      python_requires='>=3.7',
       extras_require={
           'test': tests_require,
           'docs': [
@@ -89,14 +86,12 @@ setup(name='zope.catalog',
           'zope.intid',
           'zope.component >= 3.8',
           'zope.container',
-          'zope.index>=3.5.0',
+          'zope.index >= 3.5',
           'zope.interface',
           'zope.lifecycleevent',
           'zope.location',
           'zope.schema',
       ],
-      tests_require=tests_require,
-      test_suite='zope.catalog.tests.test_suite',
       include_package_data=True,
       zip_safe=False,
       )

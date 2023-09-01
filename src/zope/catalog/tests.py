@@ -17,7 +17,6 @@ Note that indexes &c already have test suites, we only have to check that
 a catalog passes on events that it receives.
 """
 import doctest
-import re
 import unittest
 
 from BTrees.IFBTree import IFSet
@@ -46,7 +45,6 @@ from zope.site.folder import rootFolder
 from zope.site.site import LocalSiteManager
 from zope.site.site import SiteManagerAdapter
 from zope.testing import cleanup
-from zope.testing import renormalizing
 from zope.traversing import api
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.testing import setUp as traversingSetUp
@@ -58,17 +56,8 @@ from zope.catalog.interfaces import INoAutoIndex
 from zope.catalog.interfaces import INoAutoReindex
 
 
-checker = renormalizing.RENormalizing([
-    # Python 3 unicode removed the "u".
-    (re.compile("u('.*?')"),
-     r"\1"),
-    (re.compile('u(".*?")'),
-     r"\1"),
-])
-
-
 @implementer(IIntIds)
-class IntIdsStub(object):
+class IntIdsStub:
     """A stub for IntIds."""
 
     def __init__(self):
@@ -105,7 +94,7 @@ class IntIdsStub(object):
 
 
 @implementer(IIndexSearch, IInjection)
-class StubIndex(object):
+class StubIndex:
     """A stub for Index."""
 
     def __init__(self, field_name, interface=None):
@@ -269,7 +258,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         res = catalog.searchResults(name='bobo')
         self.assertEqual(len(res), 0)
 
-        class BadIndex(object):
+        class BadIndex:
             def apply(self, _q):
                 return None
         catalog['stub'] = BadIndex()
@@ -400,7 +389,7 @@ class TestIndexUpdating(unittest.TestCase):
 
         self.root = buildSampleFolderTree()
 
-        subfolder = self.root[u'folder1'][u'folder1_1']
+        subfolder = self.root['folder1']['folder1_1']
         root_sm = self.root_sm = createSiteManager(self.root)
         local_sm = self.local_sm = createSiteManager(subfolder)
         self.utility = addUtility(root_sm, '', IIntIds, IntIdsStub())
@@ -418,8 +407,7 @@ class TestIndexUpdating(unittest.TestCase):
         for value in container.values():
             yield value
             if IContainer.providedBy(value):
-                for obj in self.iterAll(value):
-                    yield obj
+                yield from self.iterAll(value)
 
     def test_visitSublocations(self):
         """ Test the iterContained method which should return only the
@@ -428,7 +416,7 @@ class TestIndexUpdating(unittest.TestCase):
 
         names = sorted([ob.__name__ for i,
                         ob in self.cat._visitSublocations()])
-        self.assertEqual(names, [u'folder1_1', u'folder1_1_1', u'folder1_1_2'])
+        self.assertEqual(names, ['folder1_1', 'folder1_1_1', 'folder1_1_2'])
 
     def test_updateIndex(self):
         """ Setup a catalog deeper within the containment hierarchy
@@ -438,7 +426,7 @@ class TestIndexUpdating(unittest.TestCase):
         self.cat.updateIndexes()
         index = self.cat['name']
         names = sorted([ob.__name__ for i, ob in index.doc.items()])
-        self.assertEqual(names, [u'folder1_1', u'folder1_1_1', u'folder1_1_2'])
+        self.assertEqual(names, ['folder1_1', 'folder1_1_1', 'folder1_1_2'])
 
     def test_optimizedUpdateIndex(self):
         """ Setup a catalog deeper within the containment hierarchy together
@@ -447,14 +435,14 @@ class TestIndexUpdating(unittest.TestCase):
         where it is registered.
         """
         utility = addUtility(self.local_sm, '', IIntIds, IntIdsStub())
-        subfolder = self.root[u'folder1'][u'folder1_1']
+        subfolder = self.root['folder1']['folder1_1']
         for obj in self.iterAll(subfolder):
             utility.register(obj)
 
         self.cat.updateIndexes()
         index = self.cat['name']
         names = sorted([ob.__name__ for i, ob in index.doc.items()])
-        self.assertEqual(names, [u'folder1_1_1', u'folder1_1_2'])
+        self.assertEqual(names, ['folder1_1_1', 'folder1_1_2'])
 
     def test_index_added(self):
         from zope.catalog.catalog import indexAdded
@@ -463,7 +451,7 @@ class TestIndexUpdating(unittest.TestCase):
         indexAdded(index, None)
 
         names = sorted([ob.__name__ for i, ob in index.doc.items()])
-        self.assertEqual(names, [u'folder1_1', u'folder1_1_1', u'folder1_1_2'])
+        self.assertEqual(names, ['folder1_1', 'folder1_1_1', 'folder1_1_2'])
 
 
 class TestSubSiteCatalog(unittest.TestCase):
@@ -479,7 +467,7 @@ class TestSubSiteCatalog(unittest.TestCase):
 
         self.root = buildSampleFolderTree()
 
-        self.subfolder = self.root[u'folder1'][u'folder1_1']
+        self.subfolder = self.root['folder1']['folder1_1']
         root_sm = self.root_sm = createSiteManager(self.root)
         local_sm = self.local_sm = createSiteManager(self.subfolder)
         self.utility = addUtility(root_sm, '', IIntIds, IntIdsStub())
@@ -497,8 +485,7 @@ class TestSubSiteCatalog(unittest.TestCase):
         for value in container.values():
             yield value
             if IContainer.providedBy(value):
-                for obj in self.iterAll(value):
-                    yield obj
+                yield from self.iterAll(value)
 
     def test_Index(self):
         """ Setup a catalog deeper within the containment hierarchy
@@ -640,7 +627,7 @@ class TestCatalogBugs(PlacelessSetup, unittest.TestCase):
         self.assertEqual(len(res), 0)
 
 
-class stoopidCallable(object):
+class stoopidCallable:
     def __init__(self, **kw):
         # leave the door open to not to set self.author
         self.__dict__.update(kw)
@@ -683,14 +670,14 @@ class TestAttributeIndex(cleanup.CleanUp,
                          unittest.TestCase):
 
     def setUp(self):
-        super(TestAttributeIndex, self).setUp()
+        super().setUp()
         from zope.schema import interfaces
         from zope.schema import vocabulary
 
         from zope import interface
 
         @interface.implementer(interfaces.ISource)
-        class SimpleVocabulary(object):
+        class SimpleVocabulary:
             def __init__(self, context):
                 self.context = context
 
@@ -720,8 +707,8 @@ class TestAttributeIndex(cleanup.CleanUp,
         # native string
         idx = AttributeIndex(field_name='foo')
         verifyObject(IAttributeIndex, idx)
-        good_name = b'foo' if bytes is str else u'foo'
-        bad_name = u'foo' if bytes is str else b'foo'
+        good_name = b'foo' if bytes is str else 'foo'
+        bad_name = 'foo' if bytes is str else b'foo'
 
         idx = AttributeIndex(field_name=good_name)
         verifyObject(IAttributeIndex, idx)
@@ -819,30 +806,30 @@ def buildSampleFolderTree():
     # folder1_1_1 folder1_1_2  folder1_2_1  folder2_1_1
 
     root = rootFolder()
-    root[u'folder1'] = Folder()
-    root[u'folder1'][u'folder1_1'] = Folder()
-    root[u'folder1'][u'folder1_1'][u'folder1_1_1'] = Folder()
-    root[u'folder1'][u'folder1_1'][u'folder1_1_2'] = Folder()
-    root[u'folder1'][u'folder1_2'] = Folder()
-    root[u'folder1'][u'folder1_2'][u'folder1_2_1'] = Folder()
-    root[u'folder2'] = Folder()
-    root[u'folder2'][u'folder2_1'] = Folder()
-    root[u'folder2'][u'folder2_1'][u'folder2_1_1'] = Folder()
-    root[u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER A}"
-         u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER KA}"
-         u"\N{CYRILLIC SMALL LETTER A}3"] = Folder()
-    root[u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER A}"
-         u"\N{CYRILLIC SMALL LETTER PE}"
-         u"\N{CYRILLIC SMALL LETTER KA}"
-         u"\N{CYRILLIC SMALL LETTER A}3"][
-        u"\N{CYRILLIC SMALL LETTER PE}"
-        u"\N{CYRILLIC SMALL LETTER A}"
-        u"\N{CYRILLIC SMALL LETTER PE}"
-        u"\N{CYRILLIC SMALL LETTER KA}"
-        u"\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
+    root['folder1'] = Folder()
+    root['folder1']['folder1_1'] = Folder()
+    root['folder1']['folder1_1']['folder1_1_1'] = Folder()
+    root['folder1']['folder1_1']['folder1_1_2'] = Folder()
+    root['folder1']['folder1_2'] = Folder()
+    root['folder1']['folder1_2']['folder1_2_1'] = Folder()
+    root['folder2'] = Folder()
+    root['folder2']['folder2_1'] = Folder()
+    root['folder2']['folder2_1']['folder2_1_1'] = Folder()
+    root["\N{CYRILLIC SMALL LETTER PE}"
+         "\N{CYRILLIC SMALL LETTER A}"
+         "\N{CYRILLIC SMALL LETTER PE}"
+         "\N{CYRILLIC SMALL LETTER KA}"
+         "\N{CYRILLIC SMALL LETTER A}3"] = Folder()
+    root["\N{CYRILLIC SMALL LETTER PE}"
+         "\N{CYRILLIC SMALL LETTER A}"
+         "\N{CYRILLIC SMALL LETTER PE}"
+         "\N{CYRILLIC SMALL LETTER KA}"
+         "\N{CYRILLIC SMALL LETTER A}3"][
+        "\N{CYRILLIC SMALL LETTER PE}"
+        "\N{CYRILLIC SMALL LETTER A}"
+        "\N{CYRILLIC SMALL LETTER PE}"
+        "\N{CYRILLIC SMALL LETTER KA}"
+        "\N{CYRILLIC SMALL LETTER A}3_1"] = Folder()
 
     return root
 

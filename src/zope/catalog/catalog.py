@@ -58,7 +58,7 @@ class Catalog(BTreeContainer):
     family = BTrees.family32
 
     def __init__(self, family=None):
-        super(Catalog, self).__init__()
+        super().__init__()
         if family is not None:
             self.family = family
 
