@@ -20,7 +20,6 @@
 """
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -32,11 +31,11 @@ def read(*rnames):
 tests_require = [
     'zope.site',
     'zope.testing',
-    'zope.testrunner',
+    'zope.testrunner >= 6.4',
 ]
 
 setup(name='zope.catalog',
-      version='5.2.dev0',
+      version='6.0.dev0',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.dev',
       description='Cataloging and Indexing Framework for the Zope Toolkit',
@@ -67,9 +66,6 @@ setup(name='zope.catalog',
       ],
       url='https://github.com/zopefoundation/zope.catalog',
       license='ZPL-2.1',
-      packages=find_packages('src'),
-      package_dir={'': 'src'},
-      namespace_packages=['zope'],
       python_requires='>=3.9',
       extras_require={
           'test': tests_require,
