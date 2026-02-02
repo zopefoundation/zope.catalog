@@ -1,14 +1,66 @@
 # Generated with zope.meta (https://zopemeta.readthedocs.io/) from:
 # https://github.com/zopefoundation/meta/tree/master/src/zope/meta/pure-python
-# Generated from:
-# https://github.com/zopefoundation/meta/tree/master/config/pure-python
-
 [build-system]
-requires = [
-    "setuptools >= 78.1.1,< 81",
-    "wheel",
-]
+requires = ["setuptools >= 78.1.1,< 81", "wheel"]
 build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "zope.catalog"
+version = "6.1.dev0"
+description = "Cataloging and Indexing Framework for the Zope Toolkit"
+license = "ZPL-2.1"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+    "Framework :: Zope :: 3",
+]
+dynamic = ["readme"]
+requires-python = ">=3.10"
+authors = [
+    { name = "Zope Foundation and contributors", email = "zope-dev@zope.dev" },
+]
+maintainers = [
+    { name = "Plone Foundation and contributors", email = "zope-dev@zope.dev" },
+]
+dependencies = [
+    "setuptools",
+    "persistent",
+    "BTrees",
+    "zope.annotation",
+    "zope.intid",
+    "zope.component >= 3.8",
+    "zope.container",
+    "zope.index >= 3.5",
+    "zope.interface",
+    "zope.lifecycleevent",
+    "zope.location",
+    "zope.schema",
+]
+keywords = ["zope3", "catalog", "index"]
+
+[project.optional-dependencies]
+test = ["zope.site", "zope.testing", "zope.testrunner >= 6.4"]
+docs = ["Sphinx", "repoze.sphinx.autointerface"]
+
+[project.urls]
+Source = "https://github.com/zopefoundation/zope.catalog"
+Documentation = "https://zopecatalog.readthedocs.io/"
+Issues = "https://github.com/zopefoundation/zope.catalog/issues"
+Changelog = "https://raw.githubusercontent.com/zopefoundation/zope.catalog/master/CHANGES.rst"
 
 [tool.coverage.run]
 branch = true
@@ -32,3 +84,6 @@ exclude_lines = [
 
 [tool.coverage.html]
 directory = "parts/htmlcov"
+
+[tool.setuptools.dynamic]
+readme = { file = ["README.rst", "CHANGES.rst"] }
