@@ -97,15 +97,15 @@ you can see how well the tests cover the code:
    ...................
    Name                         Stmts   Miss  Cover   Missing
    ----------------------------------------------------------
-   zope/catalog.py                  0      0   100%   
-   zope/catalog/attribute.py       31      0   100%   
-   zope/catalog/catalog.py        125      0   100%   
-   zope/catalog/field.py           10      0   100%   
-   zope/catalog/interfaces.py      22      0   100%   
-   zope/catalog/keyword.py         13      0   100%   
-   zope/catalog/text.py            15      0   100%   
+   zope/catalog.py                  0      0   100%
+   zope/catalog/attribute.py       31      0   100%
+   zope/catalog/catalog.py        125      0   100%
+   zope/catalog/field.py           10      0   100%
+   zope/catalog/interfaces.py      22      0   100%
+   zope/catalog/keyword.py         13      0   100%
+   zope/catalog/text.py            15      0   100%
    ----------------------------------------------------------
-   TOTAL                          216     16   100%   
+   TOTAL                          216     16   100%
    ----------------------------------------------------------------------
    Ran 19 tests in 0.554s
 
@@ -190,7 +190,7 @@ tool designed to run tests against multiple Python versions.  It creates
 a ``virtualenv`` for each configured version, installs the current package
 and configured dependencies into each ``virtualenv``, and then runs the
 configured commands.
-   
+
 :mod:`zope.catalog` configures the following :mod:`tox` environments via
 its ``tox.ini`` file:
 
