@@ -39,7 +39,6 @@ maintainers = [
     { name = "Plone Foundation and contributors", email = "zope-dev@zope.dev" },
 ]
 dependencies = [
-    "setuptools",
     "persistent",
     "BTrees",
     "zope.annotation",
@@ -89,3 +88,8 @@ directory = "parts/htmlcov"
 
 [tool.setuptools.dynamic]
 readme = { file = ["README.rst", "CHANGES.rst"] }
+
+[tool.zest-releaser]
+create-wheel = false
+extra-message = ""
+upload-pypi = false
